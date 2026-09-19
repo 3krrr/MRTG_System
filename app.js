@@ -214,7 +214,7 @@ async function renderSettings(){
 }
 async function saveSettings(kind){const form=$(kind==='timenet'?'#timenet-settings':'#storage-settings');if(!form.reportValidity())return false;const d=collect(form);if(kind==='timenet')d.centers=d.centers.split(',').map(x=>x.trim()).filter(Boolean);await api('/api/settings',{method:'POST',body:{[kind]:d}});toast('연결 설정을 저장했습니다.');await renderSettings();return true}
 function passwordModal(){modal('비밀번호 변경',`<form id="password-form">${fieldsHtml([{key:'current',label:'현재 비밀번호',type:'password',required:true,wide:true,maxlength:200},{key:'new',label:'새 비밀번호',type:'password',required:true,wide:true,maxlength:200},{key:'confirm',label:'새 비밀번호 확인',type:'password',required:true,wide:true,maxlength:200}])}</form>`,btn('취소','close-modal')+btn('비밀번호 변경','save-editor','','primary','check'));M.isPassword=true;$('#password-form [name=current]').autocomplete='current-password';$('#password-form').onsubmit=e=>{e.preventDefault();M?.save?.()};M.save=async()=>{if(!$('#password-form').reportValidity())return;const d=collect();if(d.new!==d.confirm)return errorBox('새 비밀번호가 서로 다릅니다.');try{const r=await api('/api/change-password',{method:'POST',body:{current:d.current,new:d.new,confirm:d.confirm}});clearClientCaches();S.token=r.token;S.user=r.user;store.set('mirae-session',r.token);closeAll();await reload(true);toast('비밀번호를 변경했습니다.')}catch(e){errorBox(e.message)}}}
-// v1.3: only a fresh URI challenge for this page proves the current PC.
+// v1.3.2: compatible with the v1.3.0 API; downloads are served from this website.
 let easyPC={checkId:'',owner:'',status:null,timer:null,polling:false};
 const pcSelections=new Map();let pcPanelTimer=null;
 function pcStorageKey(){return 'mirae-pc-easy:'+C.API_URL+':'+S.user.id}
@@ -222,8 +222,10 @@ function selectedPC(){return easyPC.owner===S.user?.id&&easyPC.status?.confirmed
 function setSelectedPC(id){/* Device selection is proof-bound, never chosen from another PC. */}
 function resetEasyPC(){if(easyPC.timer)clearInterval(easyPC.timer);if(pcPanelTimer)clearInterval(pcPanelTimer);easyPC={checkId:'',owner:'',status:null,timer:null,polling:false}}
 async function pcDevices(){if(DEMO)return[];return(await api('/api/pc/devices')).rows||[]}
-function pcStatusLabel(){if(easyPC.owner!==S.user?.id||!easyPC.status?.confirmed)return'이 PC 연결 확인';return easyPC.status.online?'이 PC 연결됨':'이 PC 응답 없음'}
-function updatePCIndicator(){const b=$('#pc-header-button');if(b){b.classList.toggle('pc-ready',!!easyPC.status?.online);b.innerHTML=`<span class="signal ${easyPC.status?.online?'on':''}"></span>${pcStatusLabel()}`}}
+function pcNeedsUpdate(d=easyPC.status){if(!d?.confirmed)return false;const m=String(d.version||'').match(/^(\d+)\.(\d+)\.(\d+)/);return !m||(+m[1]*1000000 + +m[2]*1000 + +m[3])<1003002}
+function pcInstallerURL(){return 'downloads/MiraeConnectorSetup.exe?v=1.3.2'}
+function pcStatusLabel(){if(easyPC.owner!==S.user?.id||!easyPC.status?.confirmed)return'이 PC 연결 확인';return easyPC.status.online?(pcNeedsUpdate()?'이 PC 업데이트 필요':'이 PC 연결됨'):'이 PC 응답 없음'}
+function updatePCIndicator(){const b=$('#pc-header-button');if(b){b.classList.toggle('pc-ready',!!easyPC.status?.online&&!pcNeedsUpdate());b.innerHTML=`<span class="signal ${easyPC.status?.online&&!pcNeedsUpdate()?'on':''}"></span>${pcStatusLabel()}`}}
 async function pollEasyPC(){
  if(!easyPC.checkId||easyPC.owner!==S.user?.id||easyPC.polling)return;
  easyPC.polling=true;const id=easyPC.checkId,owner=easyPC.owner;
@@ -233,8 +235,9 @@ async function pollEasyPC(){
 }
 function watchEasyPC(){if(easyPC.timer)clearInterval(easyPC.timer);easyPC.timer=setInterval(()=>{if(!S.user||S.user.role==='student'){resetEasyPC();return}if(!document.hidden)pollEasyPC()},3000)}
 function drawPCWizard(){
- const box=$('#easy-pc-result');if(!box)return;const d=easyPC.status||{};const finishButton=$('#easy-finish');if(finishButton)finishButton.disabled=!(d.confirmed&&d.online);
- if(d.confirmed&&d.online){box.className='easy-result ready';box.innerHTML=`<span class="signal on"></span><div><strong>이 PC 연결 완료</strong><small>${esc(d.name||'현재 PC')} · ${esc(d.version||'1.3.0')} · ${Number(d.response_age_seconds||0)}초 전 응답</small>${d.ip_hint?`<small>최근 확인 공인 IP ${esc(d.ip_hint)}</small>`:''}</div>`;const finish=$('#easy-finish');if(finish)finish.disabled=false;
+ const box=$('#easy-pc-result');if(!box)return;const d=easyPC.status||{};const finishButton=$('#easy-finish');if(finishButton)finishButton.disabled=!(d.confirmed&&d.online&&!pcNeedsUpdate(d));
+ if(d.confirmed&&d.online&&pcNeedsUpdate(d)){box.className='easy-result caution';box.innerHTML='<strong>PC 연결기 업데이트가 필요합니다.</strong><span>위 다운로드로 1.3.2을 설치한 뒤 ‘기존 설치 실행 확인’을 눌러 주세요. 연결 정보는 유지됩니다.</span>';return}
+ if(d.confirmed&&d.online){box.className='easy-result ready';box.innerHTML=`<span class="signal on"></span><div><strong>이 PC 연결 완료</strong><small>${esc(d.name||'현재 PC')} · ${esc(d.version||'확인 중')} · ${Number(d.response_age_seconds||0)}초 전 응답</small>${d.ip_hint?`<small>최근 확인 공인 IP ${esc(d.ip_hint)}</small>`:''}</div>`;const finish=$('#easy-finish');if(finish)finish.disabled=false;
   try{localStorage.setItem(pcStorageKey(),'connected-before')}catch{}
   if(M?.easyKind&&!M.easyContinued){M.easyContinued=true;const kind=M.easyKind,node=M.node;setTimeout(()=>{if(node.isConnected&&easyPC.status?.online){closeModal(true);refreshTimenet(kind)}},350)}
  }else if(d.state==='expired'){box.className='easy-result caution';box.innerHTML='<strong>연결 확인 시간이 지났습니다.</strong><span>아래 ‘연결 다시 준비’를 누르고 프로그램 열기를 다시 눌러 주세요.</span>'}
@@ -259,21 +262,21 @@ function pairPC(kind=null){
  let earlier=false;try{earlier=!!localStorage.getItem(pcStorageKey())}catch{}
  modal('이 PC에서 타임넷 연결',`<div class="easy-intro"><span class="mark">M</span><div><strong>처음 한 번만 설치하세요.</strong><p>주소·비밀키·명령어를 입력하지 않습니다.</p></div><span class="badge">Windows 10 / 11 · 64비트</span></div>
  ${supported?'':`<div class="alert error">이 연결기는 Windows PC용입니다. 현재 기기에서는 저장된 자료만 조회할 수 있습니다.</div>`}
- <ol class="easy-steps"><li><span class="step-index">1</span><div class="grow"><strong>설치 파일 받기</strong><small>이미 설치했다면 3번으로 이동하세요.</small></div>${supported?`<a class="btn" id="easy-download-link" ${DEMO?'href="#" data-preview-download="1"':`href="${esc((C.API_URL||'').replace(/\/$/,'')+'/api/pc/easy/download')}"`} download="MiraeConnectorSetup.exe">${icon('download')}다운로드</a>`:''}</li>
- <li><span class="step-index">2</span><div class="grow"><strong>받은 파일을 열고 설치</strong><small>브라우저 다운로드 목록에서 MiraeConnectorSetup.exe를 엽니다.<br>설치 확인창에서 ‘예’를 누릅니다. 설치 후 연결기가 열립니다.</small></div></li>
+ <ol class="easy-steps"><li><span class="step-index">1</span><div class="grow"><strong>설치 파일 받기</strong><small>1.3.2 설치가 끝났다면 3번으로 이동하세요.</small></div>${supported?`<a class="btn" id="easy-download-link" ${DEMO?'href="#" data-preview-download="1"':`href="${esc(pcInstallerURL())}"`} download="MiraeConnectorSetup.exe">${icon('download')}다운로드</a>`:''}</li>
+ <li><span class="step-index">2</span><div class="grow"><strong>받은 파일을 열고 설치</strong><small>브라우저 다운로드 목록에서 MiraeConnectorSetup.exe를 엽니다.<br>설치 확인창에서 ‘예’를 누릅니다. 설치 후 창 없이 트레이에서 실행됩니다. 기존 연결 정보는 유지합니다.</small></div></li>
  <li><span class="step-index">3</span><div class="grow"><strong>아래 버튼으로 이 사이트와 연결</strong><small>브라우저의 ‘열기’와 연결기의 서버 확인창을 승인해 주세요.</small></div></li></ol>
  <div class="easy-open"><a class="btn primary" id="easy-open-link" aria-disabled="true">연결 준비 중…</a></div><div id="easy-pc-result" aria-live="polite" class="easy-result"></div>
  <div class="easy-options">${btn('연결 다시 준비','easy-reprepare','','ghost sm')}${btn('기존 설치 실행 확인','easy-check','','ghost sm')}${btn('새 계정으로 다시 연결','easy-repair','','ghost sm')}</div>
  <details class="easy-trouble"><summary>버튼을 눌러도 반응이 없나요?</summary><p>설치 파일을 먼저 실행했는지 확인하세요. ‘앱을 열까요?’ 창은 직접 승인해야 합니다. 보안 정책으로 실행이 차단되면 관리자에게 문의하세요. 브라우저 다운로드 또는 보안 경고만으로는 설치 성공 여부를 판정하지 않습니다.</p><p>미리보기 화면에서는 실제 PC에 연결하지 않습니다. 설치와 타임넷 조회는 배포된 운영 사이트에서 확인하세요.</p></details>`,btn('닫기','close-modal')+btn('완료','close-modal','id="easy-finish" disabled','primary'),{wide:false});
  M.easyKind=typeof kind==='string'?kind:null;M.easyContinued=false;
- $('#easy-open-link').addEventListener('click',event=>{if(event.currentTarget.getAttribute('aria-disabled')==='true'){event.preventDefault();return}if(DEMO){event.preventDefault();easyPC.status={state:'connected',online:true,confirmed:true,device_id:'demo-pc',name:'미리보기 · 현재 PC',version:'1.3.0',response_age_seconds:0,ip_hint:'119.196.240.23'};drawPCWizard();updatePCIndicator();toast('예시 연결 상태입니다. 실제 프로그램을 검사하지 않았습니다.')}else{const b=$('#easy-pc-result');if(b)b.textContent='프로그램의 응답을 기다립니다. 브라우저에서 열기를 승인해 주세요.';setTimeout(pollEasyPC,700)}});
+ $('#easy-open-link').addEventListener('click',event=>{if(event.currentTarget.getAttribute('aria-disabled')==='true'){event.preventDefault();return}if(DEMO){event.preventDefault();easyPC.status={state:'connected',online:true,confirmed:true,device_id:'demo-pc',name:'미리보기 · 현재 PC',version:'1.3.2',response_age_seconds:0,ip_hint:'119.196.240.174'};drawPCWizard();updatePCIndicator();toast('예시 연결 상태입니다. 실제 프로그램을 검사하지 않았습니다.')}else{const b=$('#easy-pc-result');if(b)b.textContent='프로그램의 응답을 기다립니다. 브라우저에서 열기를 승인해 주세요.';setTimeout(pollEasyPC,700)}});
  $('#easy-download-link')?.addEventListener('click',e=>{if(DEMO){e.preventDefault();toast('미리보기에서는 다운로드하지 않습니다. 전체 배포본에 실제 설치 EXE가 포함되어 있습니다.')}});
  if(supported)preparePCLink(earlier?'check':'connect');else{$('#easy-open-link').textContent='Windows PC에서 진행하세요';drawPCWizard()}
 }
 async function renderPCPanel(refresh=true){
  const box=$('#pc-panel');if(!box||S.user?.role==='student')return;if(refresh&&easyPC.checkId)await pollEasyPC();
  if(!box.isConnected)return;const d=easyPC.status||{};
- box.innerHTML=`<section class="section settings-section"><div class="section-heading"><h2>이 컴퓨터의 타임넷 연결</h2><span class="badge">PC 직접 접속</span></div><div class="easy-inline"><span class="signal ${d.online?'on':''}"></span><div class="grow"><strong>${pcStatusLabel()}</strong><small>${d.confirmed?esc(d.name||'현재 PC')+' · '+(d.online?Number(d.response_age_seconds||0)+'초 전 응답':'실행 확인 필요'):'다른 PC의 접속 상태가 아니라 이 화면에서 확인한 PC만 사용합니다.'}</small></div>${btn('다운로드 · 이 PC 연결','pc-pair','','primary','download')}</div>${d.ip_hint?`<p class="muted">최근 확인 공인 IP: ${esc(d.ip_hint)} · 승인 회선: 119.196.240.23</p>`:''}<details class="easy-trouble"><summary>이 계정에 등록된 이전 PC 정리</summary><div id="easy-device-list">${btn('등록 목록 확인','easy-devices','','ghost sm')}</div></details></section>`;
+ box.innerHTML=`<section class="section settings-section"><div class="section-heading"><h2>이 컴퓨터의 타임넷 연결</h2><span class="badge">PC 직접 접속</span></div><div class="easy-inline"><span class="signal ${d.online&&!pcNeedsUpdate(d)?'on':''}"></span><div class="grow"><strong>${pcStatusLabel()}</strong><small>${d.confirmed?esc(d.name||'현재 PC')+' · '+(d.online?Number(d.response_age_seconds||0)+'초 전 응답':'실행 확인 필요'):'다른 PC의 접속 상태가 아니라 이 화면에서 확인한 PC만 사용합니다.'}</small></div>${btn('다운로드 · 이 PC 연결','pc-pair','','primary','download')}</div>${d.ip_hint?`<p class="muted">최근 확인 공인 IP: ${esc(d.ip_hint)} · 연결기 허용 범위: 119.196.240.*</p>`:''}<details class="easy-trouble"><summary>이 계정에 등록된 이전 PC 정리</summary><div id="easy-device-list">${btn('등록 목록 확인','easy-devices','','ghost sm')}</div></details></section>`;
  updatePCIndicator();
 }
 function watchPCPanel(){renderPCPanel(false)}
@@ -282,7 +285,7 @@ function checkPCConnected(){if(easyPC.checkId)pollEasyPC();else pairPC()}
 async function requirePC(kind='roster'){
  if(DEMO)return {id:'demo-pc',name:'미리보기 PC'};
  if(easyPC.checkId&&easyPC.owner===S.user.id)await pollEasyPC();
- if(easyPC.status?.confirmed&&easyPC.status.online)return {id:easyPC.status.device_id,name:easyPC.status.name};
+ if(easyPC.status?.confirmed&&easyPC.status.online&&!pcNeedsUpdate())return {id:easyPC.status.device_id,name:easyPC.status.name};
  pairPC(kind);return null;
 }
 async function renderCommonPC(){

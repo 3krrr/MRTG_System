@@ -1,8 +1,8 @@
 {
-  "version": "1.3.0",
+  "version": "1.3.2",
   "file": "MiraeConnectorSetup.exe",
-  "bytes": 6391296,
-  "sha256": "f72e99b708f5b4c77b88bab63ed30408d272c6735a6a09fd009322667f0632f8",
+  "bytes": 6489600,
+  "sha256": "8eea4c04fabe16af0cb06a0b5aeac97e59daba3eecc7d586d6461ed8d6c7ab45",
   "platform": "windows-amd64",
   "signed": false,
   "build_toolchain": "go1.23.2",
