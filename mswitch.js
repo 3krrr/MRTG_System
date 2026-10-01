@@ -9,9 +9,12 @@
   const pending=()=>{try{return JSON.parse(sessionStorage.getItem(key())||'null')}catch{return null}};
   function remember(value){try{if(value)sessionStorage.setItem(key(),JSON.stringify(value));else sessionStorage.removeItem(key())}catch{throw Error('발송 기록을 브라우저에 보관할 수 없습니다. 저장소 사용을 허용해 주세요.')}}
   function append(items){logs.push(...items);if(logs.length>700)logs=logs.slice(-700);document.querySelectorAll('.msw-logs').forEach(t=>{t.value=logs.map(x=>JSON.stringify(x)).join('\n');t.scrollTop=t.scrollHeight})}
-  function local(event,data={}){append([{time:new Date().toISOString(),version:'1.7.0',event,...data}])}
-  function logBox(){return `<details class="msw-logbox" open><summary>결과 및 로그</summary><p>오류가 나면 아래 내용을 복사해서 전달해 주세요. 비밀번호·세션 쿠키는 제외되며 학생명·전화번호·문자내용이 포함될 수 있습니다.</p><div class="msw-row"><button type="button" data-msw="copy">로그 복사</button><button type="button" data-msw="download">TXT 저장</button><button type="button" data-msw="clear">로그 비우기</button></div><textarea class="msw-logs" readonly spellcheck="false" aria-label="엠스위치 결과 및 로그">${esc(logs.map(x=>JSON.stringify(x)).join('\n'))}</textarea></details>`}
+  function local(event,data={}){append([{time:new Date().toISOString(),version:'1.7.1',event,...data}])}
+  function logBox(){return `<details class="msw-logbox" open><summary>결과 및 로그</summary><p>오류가 나면 아래 내용을 복사해서 전달해 주세요. 비밀번호·세션 쿠키는 제외되며 학생명·전화번호·문자내용이 포함될 수 있습니다.</p><div class="msw-row"><button type="button" data-msw="diagnose">서버 연결 진단 (비밀번호 불필요)</button><button type="button" data-msw="copy">로그 복사</button><button type="button" data-msw="download">TXT 저장</button><button type="button" data-msw="clear">로그 비우기</button></div><textarea class="msw-logs" readonly spellcheck="false" aria-label="엠스위치 결과 및 로그">${esc(logs.map(x=>JSON.stringify(x)).join('\n'))}</textarea></details>`}
   function bindLogs(root){
+    const epoch=generation;
+    root.querySelector('[data-msw="diagnose"]').onclick=async()=>{const button=root.querySelector('[data-msw="diagnose"]');button.disabled=true;notice(root,'Cloud Run 서버에서 두 엠스위치 서버의 연결을 확인하고 있습니다.');
+      try{const d=await call('diagnostics',{});if(epoch!==generation)return;notice(root,d.message,!d.ok)}catch(e){if(epoch===generation)notice(root,e.message,true)}finally{button.disabled=false}};
     root.querySelector('[data-msw="copy"]').onclick=async()=>{const t=root.querySelector('.msw-logs');try{await navigator.clipboard.writeText(t.value);config.toast('로그를 복사했습니다.')}catch{t.focus();t.select();config.toast('선택된 로그를 Ctrl+C로 복사해 주세요.')}};
     root.querySelector('[data-msw="download"]').onclick=()=>{const url=URL.createObjectURL(new Blob([root.querySelector('.msw-logs').value],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='mswitch-'+new Date().toISOString().replace(/[:.]/g,'-')+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
     root.querySelector('[data-msw="clear"]').onclick=()=>{logs=[];append([])};
@@ -26,13 +29,13 @@
       if(epoch!==generation||token!==config.token())throw Error('계정이 변경되어 이전 요청 결과를 표시하지 않았습니다.');
       let d;try{d=await response.json()}catch{throw Error('서버 응답이 JSON이 아닙니다. Cloud Run 주소와 서버 배포 버전을 확인해 주세요.')}
       append(d.logs||[]);
-      local('browser.response',{path,http_status:response.status,ok:d.ok,state:d.state,message:d.message,request_id:d.request_id||d.send_id});
+      local('browser.response',{path,http_status:response.status,ok:d.ok,linked:d.linked,needs_link:d.needs_link,server_version:d.version,state:d.state,message:d.message,request_id:d.request_id||d.send_id});
       if(!response.ok)throw Error(typeof d.detail==='string'?d.detail:`서버 오류 HTTP ${response.status}`);
       return d;
     }catch(e){if(epoch===generation)local('browser.error',{path,kind:e.name,message:e.name==='AbortError'?'응답 시간 초과':e.message});throw e}
     finally{clearTimeout(timer)}
   }
-  function needsLink(d){if(d.needs_link){status={...status,linked:false};config.openLink(RELINK);return true}return false}
+  function needsLink(d){if(d.needs_link){status={...status,linked:false};config.openLink(d.message||RELINK);return true}return false}
   async function auto(){
     if(!config||!['admin','teacher'].includes(config.user()?.role))return;
     const epoch=generation,version=linkVersion;
@@ -95,6 +98,7 @@
   function reset(){++generation;++linkVersion;status=null;logs=[];chosen.clear();results=[];page=1;keyword='';draft='';mode='info';channels='har';sender='';busy=false}
   function demo(path,body){
     local('preview',{path,message:'미리보기 · 실제 엠스위치에 접속하지 않습니다.'});
+    if(path==='diagnostics')return Promise.resolve({ok:true,message:'미리보기에서는 서버에 연결하지 않습니다. 배포한 사이트에서 실행하세요.'});
     if(path==='link'){status={ok:true,linked:true,username:body.username,name:'미리보기 강사',replies:[{phone:'0200000000',default:true}]};return Promise.resolve({...status,message:'미리보기 연동 완료 · 실제 저장하지 않았습니다.'})}
     if(path==='unlink'){status=null;return Promise.resolve({ok:true,linked:false,message:'미리보기 연동 삭제'})}
     if(path==='status'||path==='auto')return Promise.resolve(status||{ok:true,linked:false,username:'',replies:[]});
