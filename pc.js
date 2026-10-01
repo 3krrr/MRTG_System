@@ -1,6 +1,6 @@
 /* Outbound HTTPS relay. No localhost requests, protocol launch, or browser policy changes. */
 (()=>{'use strict';
-const VERSION='2.1.0',PROTOCOL=1,MIN_VERSION='2.1.0',PAIR='mirae-pc-pair-v21';
+const VERSION='2.1.1',PROTOCOL=1,MIN_VERSION='2.1.1',PAIR='mirae-pc-pair-v21';
 let cfg={},pair=null,state='idle',detail='',seenVersion='',timer=null,generation=0,connecting=null,loginOwner='',limited=false;
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const log=(event,d={})=>window.MiraeStore.log('pc.'+event,d),sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -19,7 +19,7 @@ function dialog(){if(!cfg.user?.())return;closeDialog();const el=document.create
 async function connect(show=true){
  if(connecting)return connecting;const g=generation;connecting=(async()=>{
   closeDialog();limited=false;seenVersion='';change('connecting');log('connect.start',{wait_seconds:10,required_version:MIN_VERSION});const end=Date.now()+10000,nonce=crypto.randomUUID();let last='',ok=false;
-  try{await rpc('register',{site_url:siteURL()},Math.min(3000,end-Date.now()));await rpc('check',{nonce},Math.min(3000,end-Date.now()));while(Date.now()<end&&g===generation){const d=await rpc('check',{},Math.min(1800,end-Date.now()));seenVersion=String(d.version||'');if(d.online&&d.nonce===nonce){if(d.protocol!==PROTOCOL||compare(d.version,MIN_VERSION)<0){change('update','사이트와 PC 프로그램의 버전이 맞지 않습니다. 프로그램은 자동 업데이트를 확인합니다. 설치 버튼으로 즉시 갱신할 수도 있습니다.');log('version.mismatch',{actual:d.version,required:MIN_VERSION});break}ok=true;change('connected');log('connect.complete',{version:d.version});closeDialog();break}await sleep(Math.min(750,Math.max(0,end-Date.now())))}}catch(e){last=e.message;const left=end-Date.now();if(left>0)await sleep(left)}
+  try{await rpc('register',{site_url:siteURL()},Math.min(3000,end-Date.now()));await rpc('check',{nonce},Math.min(3000,end-Date.now()));while(Date.now()<end&&g===generation){const d=await rpc('check',{},Math.min(1800,end-Date.now()));seenVersion=String(d.version||'');if(d.online&&d.nonce===nonce){if(d.protocol!==PROTOCOL||compare(d.version,MIN_VERSION)<0){change('update','사이트와 PC 프로그램의 버전이 맞지 않습니다. 프로그램은 자동 업데이트를 확인합니다. 설치 버튼으로 즉시 갱신할 수도 있습니다.');log('version.mismatch',{actual:d.version,required:MIN_VERSION});break}ok=true;change('connected');log('connect.complete',{pc_version:d.version,required_version:MIN_VERSION});closeDialog();break}await sleep(Math.min(750,Math.max(0,end-Date.now())))}}catch(e){last=e.message;const left=end-Date.now();if(left>0)await sleep(left)}
   if(g!==generation)return false;if(!ok&&state!=='update'){change('offline',last||'약 10초 동안 이 PC의 응답을 확인하지 못했습니다. 프로그램을 설치했거나 켜 둔 상태라면 연결을 다시 시도해 주세요.');log('connect.failed',{message:detail})}if(!ok&&show)dialog();if(ok)cfg.connected?.();return ok
  })();try{return await connecting}finally{if(g===generation)connecting=null;startTimer()}
 }
