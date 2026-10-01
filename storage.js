@@ -4,7 +4,7 @@
 const arrays=['accounts','parents','students','classes','enrollments','lessons','feedback','exams','scores','consultations','videos','video_progress','audit','parentHistory','roster'];
 const copy=x=>JSON.parse(JSON.stringify(x));
 const logs=[];
-function log(event,detail={}){const row={time:new Date().toISOString(),version:'2.1.1',event,...detail};logs.push(row);if(logs.length>600)logs.shift();root.dispatchEvent?.(new Event('mirae-log'));}
+function log(event,detail={}){const row={time:new Date().toISOString(),version:'2.1.2',event,...detail};logs.push(row);if(logs.length>600)logs.shift();root.dispatchEvent?.(new Event('mirae-log'));}
 function empty(){const d=Object.fromEntries(arrays.map(k=>[k,[]]));return Object.assign(d,{parentPasswords:{},mswitch:{},settings:{},timenet_meta:{},submissions:[],attachments:[],lesson_files:[]});}
 function flatten(d){const map=new Map();for(const name of arrays)for(const row of d[name]||[]){if(!row.id)throw Error(name+': 저장할 항목의 ID가 없습니다.');map.set(name+'/'+row.id,copy(row))}for(const k of ['parentPasswords','mswitch','settings','timenet_meta','loginDesign','designRevision'])if(d[k]!==undefined)map.set('settings/'+k,copy(d[k]));return map}
 function inflate(map){const d=empty();for(const [key,value]of map){const [kind,id]=key.split('/');if(arrays.includes(kind))d[kind].push(copy(value));else if(kind==='settings'&&['parentPasswords','mswitch','settings','timenet_meta','loginDesign','designRevision'].includes(id))d[id]=copy(value)}return d}

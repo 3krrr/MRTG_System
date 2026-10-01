@@ -1,6 +1,6 @@
 /* Outbound HTTPS relay. No localhost requests, protocol launch, or browser policy changes. */
 (()=>{'use strict';
-const VERSION='2.1.1',PROTOCOL=1,MIN_VERSION='2.1.1',PAIR='mirae-pc-pair-v21';
+const VERSION='2.1.2',PROTOCOL=1,MIN_VERSION='2.1.2',PAIR='mirae-pc-pair-v21';
 let cfg={},pair=null,state='idle',detail='',seenVersion='',timer=null,generation=0,connecting=null,loginOwner='',limited=false;
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const log=(event,d={})=>window.MiraeStore.log('pc.'+event,d),sleep=ms=>new Promise(r=>setTimeout(r,ms));

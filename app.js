@@ -1,4 +1,4 @@
-/* Mirae Classroom 2.1.1 — browser business logic, Supabase document storage. */
+/* Mirae Classroom 2.1.2 — browser business logic, Supabase document storage. */
 (() => {
 'use strict';
 const C=window.MIRAE_CONFIG||{}, DEMO=false;
@@ -271,8 +271,15 @@ async function browserRequest(path,options={}){
   }else if(route==='/api/mswitch/local-parents'){
    assertStaff(a);const ids=new Set(localScope().enrollments.map(e=>e.student_id));const q=String(body.query||new URL(path,'https://browser.invalid').searchParams.get('q')||'').trim();
    result={rows:D.students.filter(s=>(a.role==='admin'||ids.has(s.id))&&s.name.includes(q)).map(s=>({id:s.id,name:s.name,student_no:s.student_no,phone:D.parents.find(p=>p.id===s.parent_id)?.phone||''}))};
+  }else if(route==='/api/timenet/settings'){
+   assertStaff(a);const tn=window.MiraeTimeNet;if(write){assertAdmin(a);D.settings.timenet=tn.normalize(body,D.settings.timenet||{});auditV2(a,'timenet_settings_changed','settings');result={ok:true}}
+   else if(a.role==='admin')result={timenet:tn.view(D.settings.timenet||{}),teachers:D.accounts.filter(x=>x.role==='teacher'&&x.status==='active').map(x=>({id:x.id,name:x.name}))};
+   else result={managed:!!D.settings.timenet&&D.settings.timenet.shared_enabled!==false,teacher_name:tn.teacherName(D.settings.timenet||{},a)};
+  }else if(route==='/api/settings'){
+   assertAdmin(a);if(write){for(const [k,v]of Object.entries(body)){if(k==='timenet')D.settings.timenet=window.MiraeTimeNet.normalize(v,D.settings.timenet||{});else D.settings[k]={...(D.settings[k]||{}),...v}}result={ok:true}}
+   else{result=clone(D.settings);result.timenet=window.MiraeTimeNet.view(D.settings.timenet||{})}
   }else if(route==='/api/timenet/pc-config'){
-   assertStaff(a);result=clone(D.settings.timenet||{});if(a.role==='teacher')result._teacher_filter=a.name;
+   assertStaff(a);result=window.MiraeTimeNet.pcConfig(D.settings.timenet||{},a);
   }else if(route==='/api/timenet/cache'){
    assertStaff(a);if(!write||!Array.isArray(body.students)||body.students.length>30000)throw Error('학생 목록 응답을 확인하세요.');
    const rows=body.students.map(x=>({...x,id:a.id+':'+x.student_no,_pc_owner:a.id}));if(rows.some(x=>!x.student_no||!x.name))throw Error('학생 식별값이 없는 목록입니다.');
@@ -308,7 +315,7 @@ function homeworkDetail(){unavailableV2()}function reviewSubmission(){unavailabl
 function refreshTimenet(){openImport('students')}function saveSettings(){unavailableV2();return false}
 function renderSetupNotice(){document.body.classList.add('at-login');$('#app').innerHTML='<main class="v2-setup-notice"><h1>클래스룸 v2.0</h1><p>Supabase 연결 설정을 먼저 만들어 주세요.</p><a class="btn primary" href="setup.html">설정 화면 열기</a><p>Python · Google Cloud · Render 서버는 필요하지 않습니다.</p></main>'}
 async function renderSettings(){
- const main=$('#main');main.innerHTML=head('설정 · 로그','v2.1.1 · HTML + Supabase + PC 프로그램')+`<section class="section settings-section"><h2>개인설정</h2>${btn('아이디 · 비밀번호 변경','account-settings')}${btn('엠스위치 연동','mswitch-link')}<p>학생 명단은 직접 등록하거나 연결된 PC에서 타임넷 목록을 불러올 수 있습니다.</p></section><section class="section settings-section" id="timenet-settings"></section><section class="section settings-section"><h2>데이터 · 설치</h2><p>현재 Supabase: ${esc(new URL(C.SUPABASE_URL).hostname)}</p><p><a href="setup.html" target="_blank" rel="noopener">Supabase 연결 설정</a></p>${S.user.role==='admin'?'<button class="btn" id="v2-backup">전체 백업 받기</button> <label class="btn">v2 백업 복원<input type="file" id="v2-restore" accept=".json" hidden></label><p class="muted">백업에는 평문 비밀번호가 포함됩니다. 오류 제보에는 백업 대신 아래 로그를 사용하세요.</p>':''}</section><section class="section settings-section"><h2>실행 로그</h2><p>현재 탭의 최근 600개 기록입니다. 비밀번호·문자 본문·전체 학생 명단은 기록하지 않습니다.</p><textarea id="v2-log" class="v2-log" readonly aria-label="실행 로그"></textarea><button class="btn" id="v2-copy">로그 복사</button> <button class="btn" id="v2-download">텍스트 파일 저장</button></section>`;
+ const main=$('#main');main.innerHTML=head('설정 · 로그','v2.1.2 · HTML + Supabase + PC 프로그램')+`<section class="section settings-section"><h2>개인설정</h2>${btn('아이디 · 비밀번호 변경','account-settings')}${btn('엠스위치 연동','mswitch-link')}<p>학생 명단은 직접 등록하거나 연결된 PC에서 타임넷 목록을 불러올 수 있습니다.</p></section><section class="section settings-section" id="timenet-settings"></section><section class="section settings-section"><h2>데이터 · 설치</h2><p>현재 Supabase: ${esc(new URL(C.SUPABASE_URL).hostname)}</p><p><a href="setup.html" target="_blank" rel="noopener">Supabase 연결 설정</a></p>${S.user.role==='admin'?'<button class="btn" id="v2-backup">전체 백업 받기</button> <label class="btn">v2 백업 복원<input type="file" id="v2-restore" accept=".json" hidden></label><p class="muted">백업에는 평문 비밀번호가 포함됩니다. 오류 제보에는 백업 대신 아래 로그를 사용하세요.</p>':''}</section><section class="section settings-section"><h2>실행 로그</h2><p>현재 탭의 최근 600개 기록입니다. 비밀번호·문자 본문·전체 학생 명단은 기록하지 않습니다.</p><textarea id="v2-log" class="v2-log" readonly aria-label="실행 로그"></textarea><button class="btn" id="v2-copy">로그 복사</button> <button class="btn" id="v2-download">텍스트 파일 저장</button></section>`;
  mountTimenetSettings();const area=$('#v2-log');const paint=()=>{if(area.isConnected){area.value=db.logs();area.scrollTop=area.scrollHeight}else window.removeEventListener('mirae-log',paint)};paint();window.addEventListener('mirae-log',paint);
  $('#v2-copy').onclick=async()=>{try{await navigator.clipboard.writeText(area.value);toast('로그를 복사했습니다.')}catch{area.focus();area.select();toast('텍스트를 선택했습니다. Ctrl+C로 복사하세요.')}};
  $('#v2-download').onclick=()=>downloadBlob(new Blob([db.logs()],{type:'text/plain;charset=utf-8'}),'mirae-v2-log.txt');
@@ -606,13 +613,11 @@ async function renderLoginSettings(){
  }catch(e){if(node.isConnected)node.innerHTML=head('로그인 화면')+`<div class="alert error">${esc(e.message)}</div>`}
 }
 async function refreshTimenet(mode='roster'){
- if(isFamily())return;try{toast('PC에서 타임넷 요청을 처리합니다. 잠시 기다려 주세요.');const config=await api('/api/timenet/pc-config');const r=await window.MiraePC.run(mode==='check_sheet'?'timenet.check':'timenet.roster',{config});if(mode==='check_sheet'){toast(r.message);return}await api('/api/timenet/cache',{method:'POST',body:r});directoryCache=null;await reload(true);closeAll();rosterPicker();toast('타임넷 학생 목록 '+r.students.length+'명을 가져왔습니다.')}catch(e){toast(e.message,true)}
+ if(isFamily())return;const actorID=S.user?.id;
+ try{toast('PC에서 타임넷 요청을 처리합니다. 잠시 기다려 주세요.');const config=await api('/api/timenet/pc-config');if(actorID!==S.user?.id)throw Error('로그인 계정이 바뀌어 조회를 중단했습니다.');const r=await window.MiraePC.run(mode==='check_sheet'?'timenet.check':'timenet.roster',{config,_site_owner:actorID});if(actorID!==S.user?.id)throw Error('로그인 계정이 바뀌어 조회 결과를 저장하지 않았습니다.');if(mode==='check_sheet'){toast(r.message);const status=$('#timenet-result');if(status)status.textContent=r.message;return}await api('/api/timenet/cache',{method:'POST',body:r});directoryCache=null;await reload(true);closeAll();rosterPicker();toast('타임넷 학생 목록 '+r.students.length+'명을 가져왔습니다.')}catch(e){toast(e.message,true);const status=$('#timenet-result');if(status)status.textContent=e.message;db.log('timenet.failed',{message:e.message})}
 }
-async function saveSettings(){try{if(!$('#timenet-form')?.reportValidity())return false;const value=collect($('#timenet-form'));value.password_source='direct';value.centers=String(value.center_codes||'').split(',').map(x=>x.trim()).filter(Boolean);value.rbu=value.rbu_code;await api('/api/settings',{method:'POST',body:{timenet:value}});toast('타임넷 설정을 저장했습니다.');return true}catch(e){toast(e.message,true);return false}}
-async function mountTimenetSettings(){
- const node=$('#timenet-settings');if(!node)return;if(S.user.role!=='admin'){node.innerHTML='<h2>타임넷</h2><p>이 PC에서 담당 학생 명단을 조회합니다. 공통 연결 정보는 관리자가 설정합니다.</p>'+btn('학생 목록 불러오기','timenet-refresh');return}
- try{const d=await api('/api/settings');if(!node.isConnected)return;const v={...d.timenet};node.innerHTML='<h2>타임넷 연결</h2><p>기존 학원망에서 PC 프로그램이 조회합니다. 사용자 승인 IP 제한은 그대로 적용됩니다.</p><form id="timenet-form">'+fieldsHtml([{key:'username',label:'타임넷 아이디',required:true},{key:'password',label:'타임넷 비밀번호',type:'password',required:true},{key:'expected_ip',label:'기존 허용 IP / 대역',default:'119.196.240.0/24',wide:true},{key:'center_codes',label:'센터 코드 · 쉼표로 구분',default:'TE21060100,TE07030200',wide:true},{key:'rbu_code',label:'RBU 코드',default:'TE23040113',wide:true}],v)+'</form>'+btn('설정 저장','save-timenet')+btn('학생 목록 불러오기','timenet-refresh');$('#timenet-form').onsubmit=e=>{e.preventDefault();saveSettings()}}catch(e){node.textContent=e.message}
-}
+async function saveSettings(){return await window.MiraeTimeNet.save?.()||false}
+async function mountTimenetSettings(){return window.MiraeTimeNet.mount({node:$('#timenet-settings'),user:()=>S.user,api,fieldsHtml,btn,toast})}
 
 window.MiraePC?.configure({user:()=>S.user,toast,connected:()=>window.MiraeSMS?.auto()});
 window.MiraeSMS?.configure({api:browserRequest,demo:false,user:()=>S.user,token:()=>S.token,toast,openLink:openMswitchLink,changed:()=>{if(S.view==='sms')renderPage()}});
