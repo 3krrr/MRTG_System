@@ -1,6 +1,6 @@
 /* Outbound HTTPS relay. No localhost requests, protocol launch, or browser policy changes. */
 (()=>{'use strict';
-const VERSION='2.1.2',PROTOCOL=1,MIN_VERSION='2.1.2',PAIR='mirae-pc-pair-v21';
+const VERSION='2.2.0',PROTOCOL=1,MIN_VERSION='2.2.0',PAIR='mirae-pc-pair-v21';
 let cfg={},pair=null,state='idle',detail='',seenVersion='',timer=null,generation=0,connecting=null,loginOwner='',limited=false;
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const log=(event,d={})=>window.MiraeStore.log('pc.'+event,d),sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -33,13 +33,15 @@ async function install(el=$('#pc-dialog')){
   const blob=new Blob([raw,data,length,new TextEncoder().encode('MIRAE-PC-CONFIG-2.1')],{type:'application/octet-stream'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='미래탐구_PC연결_설치.exe';a.click();setTimeout(()=>URL.revokeObjectURL(u),60000);log('installer.downloaded',{version:VERSION});if(status)status.textContent='내려받은 설치 파일을 한 번 실행해 주세요. 설치가 끝나면 이 창에서 자동으로 연결을 확인합니다.';startTimer();
  }catch(e){if(status)status.textContent=e.message;else cfg.toast?.(e.message,true);log('installer.failed',{message:e.message})}finally{if(b)b.disabled=false}
 }
-async function run(kind,payload={},timeout=270000){
+async function run(kind,payload={},options={}){
+ const timeout=typeof options==='number'?options:1200000,onProgress=typeof options==='object'?options.onProgress:null;
  const u=cfg.user?.(),g=generation;if(!u||['parent','student'].includes(u.role))throw Error('강사 또는 관리자 로그인이 필요합니다.');if(state!=='connected'){if(!await connect(true))throw Error('PC 연결을 먼저 완료해 주세요.')}
  if(g!==generation||cfg.user?.()?.id!==u.id||payload._site_owner&&payload._site_owner!==u.id)throw Error('사이트 계정이 변경되어 작업을 중단했습니다.');
- const id=crypto.randomUUID(),owner=u.id;log('job.submit',{request_id:id,kind});await rpc('submit',{id,owner_id:owner,kind,payload});const end=Date.now()+timeout;
- while(Date.now()<end&&g===generation&&cfg.user?.()?.id===owner){await sleep(1000);let d;try{d=await rpc('status',{id,owner_id:owner})}catch(e){log('job.status_wait',{request_id:id,message:e.message});await sleep(1500);continue}if(['done','failed','unknown'].includes(d.state)){const r=d.result||{};for(const line of r.logs||[]){const {event,...fields}=line;window.MiraeStore.log(event,fields)}log('job.result',{request_id:id,state:d.state,ok:r.ok===true});if(!r.ok){const error=Error(r.message||'PC 작업을 완료하지 못했습니다. 아래 로그를 확인해 주세요.');error.result=r;throw error}return r}}
+ if(kind.endsWith('.roster')){const caps=await rpc('check');if(!caps.roster_progress)throw Error('전체 명단 기능용 SQL이 필요합니다. 04_v2_2_0_roster_progress.sql을 Supabase SQL Editor에서 추가 실행해 주세요.')}
+ const id=crypto.randomUUID(),owner=u.id;let lastProgress='';const reportProgress=p=>{onProgress?.(p);const text=JSON.stringify(p);if(text!==lastProgress){lastProgress=text;log('job.progress',{request_id:id,kind,...p})}};log('job.submit',{request_id:id,kind});await rpc('submit',{id,owner_id:owner,kind,payload});const end=Date.now()+timeout;
+ while(Date.now()<end&&g===generation&&cfg.user?.()?.id===owner){await sleep(1000);let d;try{d=await rpc('status',{id,owner_id:owner})}catch(e){log('job.status_wait',{request_id:id,message:e.message});await sleep(1500);continue}if(g!==generation||cfg.user?.()?.id!==owner)break;if(d.state==='queued')reportProgress({stage:1,label:'PC가 앞선 작업을 마치고 시작하기를 기다리는 중'});else if(d.progress?.stage)reportProgress(d.progress);if(['done','failed','unknown'].includes(d.state)){const r=d.result||{};for(const line of r.logs||[]){const {event,...fields}=line;window.MiraeStore.log(event,fields)}log('job.result',{request_id:id,state:d.state,ok:r.ok===true});if(!r.ok){const error=Error(r.message||'PC 작업을 완료하지 못했습니다. 아래 로그를 확인해 주세요.');error.result=r;throw error}return r}}
  log('job.unknown',{request_id:id,kind});throw Error(kind==='mswitch.send'?'발송 결과를 확인하지 못했습니다. 자동 재발송하지 않았습니다. 엠스위치 발송내역을 확인해 주세요.':'PC 작업 결과를 확인하지 못했습니다. 설정 · 로그를 확인해 주세요.');
 }
-function reset(){generation++;loginOwner='';connecting=null;limited=false;if(timer)clearInterval(timer);timer=null;closeDialog();change('idle')}
+function reset(){window.MiraeProgress?.reset();generation++;loginOwner='';connecting=null;limited=false;if(timer)clearInterval(timer);timer=null;closeDialog();change('idle')}
 window.MiraePC={configure(c){cfg=c},auto,connect,run,install,paint,reset,open(){if(state==='connected'){cfg.toast?.('PC연동 활성화 · 버전 '+seenVersion);return}dialog()},get state(){return state},get version(){return seenVersion},compare};
 })();

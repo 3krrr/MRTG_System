@@ -4,7 +4,7 @@
 const arrays=['accounts','parents','students','classes','enrollments','lessons','feedback','exams','scores','consultations','videos','video_progress','audit','parentHistory','roster'];
 const copy=x=>JSON.parse(JSON.stringify(x));
 const logs=[];
-function log(event,detail={}){const row={time:new Date().toISOString(),version:'2.1.2',event,...detail};logs.push(row);if(logs.length>600)logs.shift();root.dispatchEvent?.(new Event('mirae-log'));}
+function log(event,detail={}){const row={time:new Date().toISOString(),version:'2.2.0',event,...detail};logs.push(row);if(logs.length>600)logs.shift();root.dispatchEvent?.(new Event('mirae-log'));}
 function empty(){const d=Object.fromEntries(arrays.map(k=>[k,[]]));return Object.assign(d,{parentPasswords:{},mswitch:{},settings:{},timenet_meta:{},submissions:[],attachments:[],lesson_files:[]});}
 function flatten(d){const map=new Map();for(const name of arrays)for(const row of d[name]||[]){if(!row.id)throw Error(name+': 저장할 항목의 ID가 없습니다.');map.set(name+'/'+row.id,copy(row))}for(const k of ['parentPasswords','mswitch','settings','timenet_meta','loginDesign','designRevision'])if(d[k]!==undefined)map.set('settings/'+k,copy(d[k]));return map}
 function inflate(map){const d=empty();for(const [key,value]of map){const [kind,id]=key.split('/');if(arrays.includes(kind))d[kind].push(copy(value));else if(kind==='settings'&&['parentPasswords','mswitch','settings','timenet_meta','loginDesign','designRevision'].includes(id))d[id]=copy(value)}return d}
@@ -22,7 +22,7 @@ class Store{
   const started=Date.now();log('supabase.request',{operation:name});
   let r;try{r=await fetch(base.origin+'/rest/v1/rpc/'+name,{method:'POST',headers,body:JSON.stringify(body),signal:AbortSignal.timeout(20000),credentials:'omit'})}catch(e){log('supabase.network_error',{operation:name,kind:e.name});throw Error('Supabase 응답을 받지 못했습니다. 인터넷·프로젝트 URL을 확인하세요. 저장 중이었다면 새로고침해서 반영 여부를 먼저 확인하세요.')}
   let data;try{data=await r.json()}catch{throw Error('Supabase 응답 형식을 확인하지 못했습니다.')}
-  log('supabase.response',{operation:name,status:r.status,elapsed_ms:Date.now()-started,...(!r.ok?{code:String(data.code||'unknown')}:{})});
+  const reason=['INVALID_DOCUMENT_KEY','INVALID_BATCH'].find(x=>String(data.message||'').includes(x));log('supabase.response',{operation:name,status:r.status,elapsed_ms:Date.now()-started,...(!r.ok?{code:String(data.code||'unknown'),reason:reason||'unclassified'}:{})});if(!r.ok&&reason)throw Error(reason==='INVALID_DOCUMENT_KEY'?'학생 저장 ID 형식이 데이터베이스 규칙과 맞지 않습니다. 사이트를 v2.2.0으로 갱신한 뒤 저장만 다시 시도하세요.':'저장할 자료 묶음의 형식을 확인하세요. 기존 자료는 유지됩니다.');
   if(!r.ok)throw Error(['PGRST202','42P01','42883'].includes(data.code)?'v2.0 SQL 설치가 필요합니다. 01_v2_0_install.sql을 Supabase SQL Editor에서 실행하세요.':`Supabase 요청 실패 (${r.status}, ${data.code||'unknown'}). 설정·로그의 내용을 복사해 주세요.`);
   return data;
  }

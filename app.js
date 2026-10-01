@@ -1,4 +1,4 @@
-/* Mirae Classroom 2.1.2 — browser business logic, Supabase document storage. */
+/* Mirae Classroom 2.2.0 — browser business logic, Supabase document storage. */
 (() => {
 'use strict';
 const C=window.MIRAE_CONFIG||{}, DEMO=false;
@@ -52,7 +52,7 @@ function studentMetrics(sid){const cache=derivedCache();if(cache.metrics.has(sid
 function reportRows(){const ids=new Set(S.base.enrollments.filter(e=>(!S.classId||e.class_id===S.classId)&&(!S.criteria.currentOnly||e.status==='enrolled')).map(e=>e.student_id));return S.base.students.filter(s=>ids.has(s.id)).map(s=>{const m=studentMetrics(s.id),c=S.criteria,checks=[];if(c.averageOn)checks.push({hit:m.count>=c.minimum&&m.average!==null&&m.average<c.average,label:'평균 미달'});if(c.dropOn)checks.push({hit:m.count>=c.minimum&&m.delta!==null&&m.delta<=-c.drop,label:'성적 하락'});if(c.missingOn)checks.push({hit:m.missing>=c.missing,label:'과제 누락'});if(c.absenceOn)checks.push({hit:m.absence>=c.absence,label:'결석 누적'});const matched=checks.length>0&&(c.logic==='all'?checks.every(x=>x.hit):checks.some(x=>x.hit));return {...s,...m,reasons:checks.filter(x=>x.hit).map(x=>x.label),matched,signal:matched?checks.filter(x=>x.hit).length:0}})}
 function spark(values){if(!values.length)return'—';const x=i=>values.length<2?42:2+i/(values.length-1)*80,y=v=>27-v/100*24;return`<svg viewBox="0 0 86 30" class="tiny-chart" aria-label="성적 추이"><path d="${values.map((v,i)=>(i?'L':'M')+x(i)+','+y(v)).join(' ')}" stroke="#819bef" stroke-width="1.8" fill="none"/><circle cx="${x(values.length-1)}" cy="${y(values.at(-1))}" r="2.4" fill="#5276e5"/></svg>`}
 const inflightReads=new Map(),photoCache=new Map();let directoryCache=null,photoBytes=0;
-function clearClientCaches(){window.MiraeSMS?.reset();stopPresence();resetEasyPC();inflightReads.clear();photoCache.clear();photoBytes=0;directoryCache=null}
+function clearClientCaches(){timenetPending=null;window.MiraeSMS?.reset();stopPresence();resetEasyPC();inflightReads.clear();photoCache.clear();photoBytes=0;directoryCache=null}
 async function api(path,options={}){
  const read=(!options.method||options.method==='GET')&&!options.signal;
  if(!read)return apiRequest(path,options);
@@ -274,15 +274,15 @@ async function browserRequest(path,options={}){
   }else if(route==='/api/timenet/settings'){
    assertStaff(a);const tn=window.MiraeTimeNet;if(write){assertAdmin(a);D.settings.timenet=tn.normalize(body,D.settings.timenet||{});auditV2(a,'timenet_settings_changed','settings');result={ok:true}}
    else if(a.role==='admin')result={timenet:tn.view(D.settings.timenet||{}),teachers:D.accounts.filter(x=>x.role==='teacher'&&x.status==='active').map(x=>({id:x.id,name:x.name}))};
-   else result={managed:!!D.settings.timenet&&D.settings.timenet.shared_enabled!==false,teacher_name:tn.teacherName(D.settings.timenet||{},a)};
+   else result={managed:!!D.settings.timenet&&D.settings.timenet.shared_enabled!==false};
   }else if(route==='/api/settings'){
    assertAdmin(a);if(write){for(const [k,v]of Object.entries(body)){if(k==='timenet')D.settings.timenet=window.MiraeTimeNet.normalize(v,D.settings.timenet||{});else D.settings[k]={...(D.settings[k]||{}),...v}}result={ok:true}}
    else{result=clone(D.settings);result.timenet=window.MiraeTimeNet.view(D.settings.timenet||{})}
   }else if(route==='/api/timenet/pc-config'){
    assertStaff(a);result=window.MiraeTimeNet.pcConfig(D.settings.timenet||{},a);
   }else if(route==='/api/timenet/cache'){
-   assertStaff(a);if(!write||!Array.isArray(body.students)||body.students.length>30000)throw Error('학생 목록 응답을 확인하세요.');
-   const rows=body.students.map(x=>({...x,id:a.id+':'+x.student_no,_pc_owner:a.id}));if(rows.some(x=>!x.student_no||!x.name))throw Error('학생 식별값이 없는 목록입니다.');
+   assertStaff(a);if(body._site_owner!==a.id)throw Error('로그인 계정이 바뀌어 명단 저장을 중단했습니다.');if(!write||!Array.isArray(body.students)||body.students.length>30000)throw Error('학생 목록 응답을 확인하세요.');
+   const rows=body.students.map(x=>({...x,id:a.id+'.'+Array.from(new TextEncoder().encode(String(x.student_no)),b=>b.toString(16).padStart(2,'0')).join(''),_pc_owner:a.id}));if(rows.some(x=>!x.student_no||!x.name))throw Error('학생 식별값이 없는 목록입니다.');
    D.roster=[...D.roster.filter(x=>x._pc_owner!==a.id),...rows];D.timenet_meta={...D.timenet_meta,updated_at:body.fetched_at||new Date().toISOString()};result={ok:true,count:rows.length};
   }else if(route==='/api/timenet/directory'||route==='/api/timenet/search'){
    assertStaff(a);const q=new URL(path,'https://browser.invalid').searchParams.get('q')||'';result={rows:D.roster.filter(x=>(x._pc_owner===a.id||a.role==='admin'&&!x._pc_owner)&&(!q||x.name.includes(q)||x.student_no.includes(q))),updated_at:D.timenet_meta.updated_at};
@@ -315,7 +315,7 @@ function homeworkDetail(){unavailableV2()}function reviewSubmission(){unavailabl
 function refreshTimenet(){openImport('students')}function saveSettings(){unavailableV2();return false}
 function renderSetupNotice(){document.body.classList.add('at-login');$('#app').innerHTML='<main class="v2-setup-notice"><h1>클래스룸 v2.0</h1><p>Supabase 연결 설정을 먼저 만들어 주세요.</p><a class="btn primary" href="setup.html">설정 화면 열기</a><p>Python · Google Cloud · Render 서버는 필요하지 않습니다.</p></main>'}
 async function renderSettings(){
- const main=$('#main');main.innerHTML=head('설정 · 로그','v2.1.2 · HTML + Supabase + PC 프로그램')+`<section class="section settings-section"><h2>개인설정</h2>${btn('아이디 · 비밀번호 변경','account-settings')}${btn('엠스위치 연동','mswitch-link')}<p>학생 명단은 직접 등록하거나 연결된 PC에서 타임넷 목록을 불러올 수 있습니다.</p></section><section class="section settings-section" id="timenet-settings"></section><section class="section settings-section"><h2>데이터 · 설치</h2><p>현재 Supabase: ${esc(new URL(C.SUPABASE_URL).hostname)}</p><p><a href="setup.html" target="_blank" rel="noopener">Supabase 연결 설정</a></p>${S.user.role==='admin'?'<button class="btn" id="v2-backup">전체 백업 받기</button> <label class="btn">v2 백업 복원<input type="file" id="v2-restore" accept=".json" hidden></label><p class="muted">백업에는 평문 비밀번호가 포함됩니다. 오류 제보에는 백업 대신 아래 로그를 사용하세요.</p>':''}</section><section class="section settings-section"><h2>실행 로그</h2><p>현재 탭의 최근 600개 기록입니다. 비밀번호·문자 본문·전체 학생 명단은 기록하지 않습니다.</p><textarea id="v2-log" class="v2-log" readonly aria-label="실행 로그"></textarea><button class="btn" id="v2-copy">로그 복사</button> <button class="btn" id="v2-download">텍스트 파일 저장</button></section>`;
+ const main=$('#main');main.innerHTML=head('설정 · 로그','v2.2.0 · HTML + Supabase + PC 프로그램')+`<section class="section settings-section"><h2>개인설정</h2>${btn('아이디 · 비밀번호 변경','account-settings')}${btn('엠스위치 연동','mswitch-link')}<p>학생 명단은 직접 등록하거나 연결된 PC에서 타임넷 목록을 불러올 수 있습니다.</p></section><section class="section settings-section" id="timenet-settings"></section><section class="section settings-section"><h2>데이터 · 설치</h2><p>현재 Supabase: ${esc(new URL(C.SUPABASE_URL).hostname)}</p><p><a href="setup.html" target="_blank" rel="noopener">Supabase 연결 설정</a></p>${S.user.role==='admin'?'<button class="btn" id="v2-backup">전체 백업 받기</button> <label class="btn">v2 백업 복원<input type="file" id="v2-restore" accept=".json" hidden></label><p class="muted">백업에는 평문 비밀번호가 포함됩니다. 오류 제보에는 백업 대신 아래 로그를 사용하세요.</p>':''}</section><section class="section settings-section"><h2>실행 로그</h2><p>현재 탭의 최근 600개 기록입니다. 비밀번호·문자 본문·전체 학생 명단은 기록하지 않습니다.</p><textarea id="v2-log" class="v2-log" readonly aria-label="실행 로그"></textarea><button class="btn" id="v2-copy">로그 복사</button> <button class="btn" id="v2-download">텍스트 파일 저장</button></section>`;
  mountTimenetSettings();const area=$('#v2-log');const paint=()=>{if(area.isConnected){area.value=db.logs();area.scrollTop=area.scrollHeight}else window.removeEventListener('mirae-log',paint)};paint();window.addEventListener('mirae-log',paint);
  $('#v2-copy').onclick=async()=>{try{await navigator.clipboard.writeText(area.value);toast('로그를 복사했습니다.')}catch{area.focus();area.select();toast('텍스트를 선택했습니다. Ctrl+C로 복사하세요.')}};
  $('#v2-download').onclick=()=>downloadBlob(new Blob([db.logs()],{type:'text/plain;charset=utf-8'}),'mirae-v2-log.txt');
@@ -612,9 +612,33 @@ async function renderLoginSettings(){
  $('[data-action=design-save]',node).onclick=async()=>{const b=$('[data-action=design-save]',node);if(b.disabled)return;collectLinks();draw();b.disabled=true;try{validateDesign(draft);const r=await api('/api/admin/login-design',{method:'POST',body:{design:draft,revision}});revision=r.revision;loginDesign=safeDesign(r.design);designRevision=revision;themeDesign();$('#design-save-status').textContent='저장했습니다. 로그인 화면과 메인화면에 적용됩니다.';toast('화면 설정을 저장했습니다.')}catch(e){$('#design-save-status').textContent=e.message;toast(e.message,true)}finally{b.disabled=false}};
  }catch(e){if(node.isConnected)node.innerHTML=head('로그인 화면')+`<div class="alert error">${esc(e.message)}</div>`}
 }
+let timenetBusy=false,timenetPending=null;
 async function refreshTimenet(mode='roster'){
- if(isFamily())return;const actorID=S.user?.id;
- try{toast('PC에서 타임넷 요청을 처리합니다. 잠시 기다려 주세요.');const config=await api('/api/timenet/pc-config');if(actorID!==S.user?.id)throw Error('로그인 계정이 바뀌어 조회를 중단했습니다.');const r=await window.MiraePC.run(mode==='check_sheet'?'timenet.check':'timenet.roster',{config,_site_owner:actorID});if(actorID!==S.user?.id)throw Error('로그인 계정이 바뀌어 조회 결과를 저장하지 않았습니다.');if(mode==='check_sheet'){toast(r.message);const status=$('#timenet-result');if(status)status.textContent=r.message;return}await api('/api/timenet/cache',{method:'POST',body:r});directoryCache=null;await reload(true);closeAll();rosterPicker();toast('타임넷 학생 목록 '+r.students.length+'명을 가져왔습니다.')}catch(e){toast(e.message,true);const status=$('#timenet-result');if(status)status.textContent=e.message;db.log('timenet.failed',{message:e.message})}
+ if(isFamily()||timenetBusy)return;const actorID=S.user?.id;
+ if(timenetPending?.owner!==actorID)timenetPending=null;
+ const op=mode==='roster'?window.MiraeProgress.begin('타임넷 전체 학생 명단'):null;
+ if(mode==='roster'&&!op)return;
+ timenetBusy=true;
+ const current=()=>actorID===S.user?.id;
+ async function saveReceived(){
+  if(!current())throw Error('로그인 계정이 바뀌어 명단 저장을 중단했습니다.');
+  const r=timenetPending?.result;if(!r)throw Error('저장할 명단이 없습니다.');
+  op?.update({stage:5,label:'받은 명단을 Supabase에 한 번에 저장',received:r.students.length});
+  db.log('timenet.cache.start',{count:r.students.length});
+  await api('/api/timenet/cache',{method:'POST',body:{...r,_site_owner:actorID}});
+  db.log('timenet.cache.complete',{count:r.students.length});timenetPending=null;
+  if(!current())return;directoryCache=null;op?.done(r.students.length+'명 저장 완료');
+  try{await reload(true);if(current()){closeAll();rosterPicker();toast('타임넷 학생 '+r.students.length+'명을 가져왔습니다.')}}catch(e){toast('명단 저장은 완료했습니다. 화면을 다시 열어 주세요. '+e.message,true)}
+ }
+ function failed(e){if(!current())return;toast(e.message,true);const status=$('#timenet-result');if(status)status.textContent=e.message;db.log('timenet.failed',{message:e.message,received_retained:!!timenetPending});op?.fail(e.message,timenetPending?async()=>{if(timenetBusy)return;timenetBusy=true;op.resume();try{await saveReceived()}catch(e){failed(e)}finally{timenetBusy=false}}:null)}
+ try{
+  if(mode==='roster'&&timenetPending){await saveReceived();return}
+  const config=await api('/api/timenet/pc-config');if(!current())throw Error('로그인 계정이 바뀌어 조회를 중단했습니다.');
+  const r=await window.MiraePC.run(mode==='check_sheet'?'timenet.check':'timenet.roster',{config,_site_owner:actorID},{onProgress:p=>op?.update(p)});
+  if(!current())throw Error('로그인 계정이 바뀌어 조회 결과를 저장하지 않았습니다.');
+  if(mode==='check_sheet'){toast(r.message);const status=$('#timenet-result');if(status)status.textContent=r.message;return}
+  timenetPending={owner:actorID,result:r};await saveReceived();
+ }catch(e){failed(e)}finally{timenetBusy=false}
 }
 async function saveSettings(){return await window.MiraeTimeNet.save?.()||false}
 async function mountTimenetSettings(){return window.MiraeTimeNet.mount({node:$('#timenet-settings'),user:()=>S.user,api,fieldsHtml,btn,toast})}
