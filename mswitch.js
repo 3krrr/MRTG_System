@@ -1,109 +1,65 @@
-/* Separate MSwitch state: no password persistence in browser storage. */
-(() => {
-  'use strict';
-  const RELINK='엠스위치와의 자동 연동이 해지된 상태입니다. 다시 연동해주세요';
-  let config=null, generation=0, linkVersion=0, status=null, logs=[], chosen=new Map(), results=[], page=1, keyword='', draft='', mode='info', channels='har', sender='', busy=false;
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const uuid=()=>crypto.randomUUID();
-  const key=()=>`mirae-mswitch-pending:${config.user().id}`;
-  const pending=()=>{try{return JSON.parse(sessionStorage.getItem(key())||'null')}catch{return null}};
-  function remember(value){try{if(value)sessionStorage.setItem(key(),JSON.stringify(value));else sessionStorage.removeItem(key())}catch{throw Error('발송 기록을 브라우저에 보관할 수 없습니다. 저장소 사용을 허용해 주세요.')}}
-  function append(items){logs.push(...items);if(logs.length>700)logs=logs.slice(-700);document.querySelectorAll('.msw-logs').forEach(t=>{t.value=logs.map(x=>JSON.stringify(x)).join('\n');t.scrollTop=t.scrollHeight})}
-  function local(event,data={}){append([{time:new Date().toISOString(),version:'1.7.1',event,...data}])}
-  function logBox(){return `<details class="msw-logbox" open><summary>결과 및 로그</summary><p>오류가 나면 아래 내용을 복사해서 전달해 주세요. 비밀번호·세션 쿠키는 제외되며 학생명·전화번호·문자내용이 포함될 수 있습니다.</p><div class="msw-row"><button type="button" data-msw="diagnose">서버 연결 진단 (비밀번호 불필요)</button><button type="button" data-msw="copy">로그 복사</button><button type="button" data-msw="download">TXT 저장</button><button type="button" data-msw="clear">로그 비우기</button></div><textarea class="msw-logs" readonly spellcheck="false" aria-label="엠스위치 결과 및 로그">${esc(logs.map(x=>JSON.stringify(x)).join('\n'))}</textarea></details>`}
-  function bindLogs(root){
-    const epoch=generation;
-    root.querySelector('[data-msw="diagnose"]').onclick=async()=>{const button=root.querySelector('[data-msw="diagnose"]');button.disabled=true;notice(root,'Cloud Run 서버에서 두 엠스위치 서버의 연결을 확인하고 있습니다.');
-      try{const d=await call('diagnostics',{});if(epoch!==generation)return;notice(root,d.message,!d.ok)}catch(e){if(epoch===generation)notice(root,e.message,true)}finally{button.disabled=false}};
-    root.querySelector('[data-msw="copy"]').onclick=async()=>{const t=root.querySelector('.msw-logs');try{await navigator.clipboard.writeText(t.value);config.toast('로그를 복사했습니다.')}catch{t.focus();t.select();config.toast('선택된 로그를 Ctrl+C로 복사해 주세요.')}};
-    root.querySelector('[data-msw="download"]').onclick=()=>{const url=URL.createObjectURL(new Blob([root.querySelector('.msw-logs').value],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='mswitch-'+new Date().toISOString().replace(/[:.]/g,'-')+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
-    root.querySelector('[data-msw="clear"]').onclick=()=>{logs=[];append([])};
-  }
-  async function call(path,body){
-    const token=config.token(),epoch=generation;
-    if(config.demo)return demo(path,body);
-    const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),150000);
-    local('browser.request',{path});
-    try{
-      const response=await fetch(String(config.url||'').replace(/\/$/,'')+'/api/mswitch/'+path,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:ctrl.signal});
-      if(epoch!==generation||token!==config.token())throw Error('계정이 변경되어 이전 요청 결과를 표시하지 않았습니다.');
-      let d;try{d=await response.json()}catch{throw Error('서버 응답이 JSON이 아닙니다. Cloud Run 주소와 서버 배포 버전을 확인해 주세요.')}
-      append(d.logs||[]);
-      local('browser.response',{path,http_status:response.status,ok:d.ok,linked:d.linked,needs_link:d.needs_link,server_version:d.version,state:d.state,message:d.message,request_id:d.request_id||d.send_id});
-      if(!response.ok)throw Error(typeof d.detail==='string'?d.detail:`서버 오류 HTTP ${response.status}`);
-      return d;
-    }catch(e){if(epoch===generation)local('browser.error',{path,kind:e.name,message:e.name==='AbortError'?'응답 시간 초과':e.message});throw e}
-    finally{clearTimeout(timer)}
-  }
-  function needsLink(d){if(d.needs_link){status={...status,linked:false};config.openLink(d.message||RELINK);return true}return false}
-  async function auto(){
-    if(!config||!['admin','teacher'].includes(config.user()?.role))return;
-    const epoch=generation,version=linkVersion;
-    try{const d=await call('auto',{});if(epoch!==generation||version!==linkVersion)return;status=d;if(d.ok)config.changed?.();if(!needsLink(d)&&!d.ok)config.toast(d.message,true)}
-    catch(e){if(epoch===generation&&version===linkVersion){local('auto.unavailable',{message:e.message});config.openLink(RELINK+'\n'+e.message)}}
-  }
-  function options(){return (status?.replies||[]).map(r=>`<option value="${esc(r.phone)}" ${r.phone===sender?'selected':''}>${esc(r.phone)}${r.default?' · 대표':''}</option>`).join('')}
-  function notice(root,message,error=false){const box=root.querySelector('.msw-result');if(box){box.textContent=message;box.classList.toggle('msw-error',error)}}
-  async function mountLink(root,message=''){
-    const epoch=generation;
-    root.className='msw';
-    root.innerHTML=`<p>현재 클래스룸 계정에 본인의 엠스위치 계정을 연결합니다. 다음 로그인부터 자동으로 연동합니다.</p><div class="msw-result" role="status">${esc(message||'연동 상태를 확인하고 있습니다.')}</div><form class="msw-link-form"><label>엠스위치 아이디<input name="username" autocomplete="off" maxlength="150" required></label><label>엠스위치 비밀번호<input name="password" type="password" autocomplete="new-password" maxlength="256" required placeholder="저장된 비밀번호는 표시하지 않습니다"></label><div class="msw-row"><button type="submit" class="msw-primary">연동하기</button><button type="button" data-msw="unlink">저장된 연동 삭제</button></div></form><p class="msw-note">계정 정보는 본인 계정에 저장합니다. 요청에 따라 DB에는 평문으로 보관하며 DB 관리자에게는 비밀번호가 보입니다.</p>${logBox()}`;
-    bindLogs(root);const form=root.querySelector('form');
-    form.onsubmit=async e=>{e.preventDefault();const version=++linkVersion;const button=form.querySelector('[type="submit"]');button.disabled=true;notice(root,'엠스위치에 로그인하고 사용자 이름을 확인하고 있습니다.');
-      try{const d=await call('link',{username:form.elements.username.value,password:form.elements.password.value});form.elements.password.value='';if(epoch!==generation||version!==linkVersion)return;if(d.ok){status=d;chosen.clear();results=[];sender='';config.changed?.();}notice(root,d.message,!d.ok)}catch(err){form.elements.password.value='';notice(root,err.message,true)}finally{button.disabled=false}};
-    root.querySelector('[data-msw="unlink"]').onclick=async()=>{if(!confirm('본인의 저장된 엠스위치 계정을 삭제할까요?'))return;++linkVersion;try{const d=await call('unlink',{});if(epoch!==generation)return;status=d;chosen.clear();results=[];config.changed?.();form.reset();notice(root,d.message)}catch(e){notice(root,e.message,true)}};
-    const version=linkVersion;
-    try{const d=await call('status');if(epoch!==generation||!root.isConnected||version!==linkVersion)return;status=d;form.elements.username.value=d.username||'';if(!message)notice(root,d.linked?`${d.name}님 · 연동되어 있습니다.`:d.needs_link?RELINK:'아직 연동된 엠스위치 계정이 없습니다.')}catch(e){if(root.isConnected)notice(root,e.message,true)}
-  }
-  function paintPeople(root){
-    const list=root.querySelector('.msw-search-list');
-    list.innerHTML=results.length?results.map((x,i)=>`<label class="msw-person"><input type="checkbox" data-pick="${i}" ${chosen.has(x.key)?'checked':''}><span><strong>${esc(x.name)}</strong><small>학부모${x.parent===2?' 2':''} · ${esc(x.phone)}</small></span></label>`).join(''):'<p class="msw-note">학생명을 입력하여 엠스위치에서 검색해 주세요. 이 사이트에 학생을 등록하지 않아도 됩니다.</p>';
-    list.querySelectorAll('[data-pick]').forEach(el=>el.onchange=()=>{const p=results[+el.dataset.pick];if(el.checked)chosen.set(p.key,p);else chosen.delete(p.key);paintSelected(root)});
-    paintSelected(root);
-  }
-  function paintSelected(root){
-    const people=[...chosen.values()];const count=people.length,duplicates=count-new Set(people.map(p=>p.phone.replace(/\D/g,''))).size;
-    root.querySelector('.msw-count').textContent=`학부모 ${count}명 · 학생 0명${duplicates?' · 동일 번호 중복 선택':''}`;
-    root.querySelector('.msw-selected').innerHTML=people.map((p,i)=>`<button type="button" data-remove="${i}">${esc(p.name)} · ${esc(p.phone)} ×</button>`).join('');
-    root.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{chosen.delete(people[+b.dataset.remove].key);paintPeople(root)});
-    root.querySelector('[data-msw="send"]').disabled=busy||Boolean(pending())||!status?.linked||!count;
-  }
-  async function mountSend(root){
-    const epoch=generation;
-    root.className='msw';
-    root.innerHTML=`<div class="msw-heading"><div><h1>문자보내기</h1><p>엠스위치에서 학생을 검색하고 학부모에게 보냅니다.</p></div><button type="button" data-msw="link">엠스위치 연동</button></div><div class="msw-result" role="status">연동 상태 확인 중</div><div class="msw-columns"><section class="msw-card"><h2>1. 받는 사람</h2><form class="msw-search msw-row"><input name="keyword" aria-label="학생명" placeholder="학생명 입력" value="${esc(keyword)}" required maxlength="50"><button type="submit">검색</button></form><div class="msw-search-list"></div><div class="msw-row"><button type="button" data-msw="prev">이전 검색 페이지</button><span class="msw-page">${page} 페이지</span><button type="button" data-msw="next">다음 검색 페이지</button></div><h3 class="msw-count"></h3><div class="msw-selected"></div></section><section class="msw-card"><h2>2. 문자내용</h2><label>문자 구분<select name="mode"><option value="info">정보성</option><option value="ad">광고성 · (광고) 자동 표시</option></select></label><label>발신번호<select name="sender" aria-label="발신번호">${options()}</select></label><label>발송 경로<select name="channels"><option value="har">기존 엠스위치 설정 · 앱 / 알림톡 / SMS</option><option value="sms">SMS만 요청</option></select></label><p class="msw-note">기본 경로는 제공된 성공 기록과 같습니다. SMS만 요청하는 경로는 실제 발송 테스트가 필요합니다.</p><label>문자내용<textarea name="message" rows="7" maxlength="2000" placeholder="내용을 입력하세요">${esc(draft)}</textarea></label><div class="msw-row"><button type="button" class="msw-primary" data-msw="send">발송</button><button type="button" data-msw="new">발송내역 확인 후 새 요청 시작</button></div><p class="msw-note">접수 성공은 휴대전화 수신 완료를 뜻하지 않습니다. 응답이 끊긴 경우 발송내역을 먼저 확인하세요.</p></section></div>${logBox()}`;
-    bindLogs(root);paintPeople(root);
-    root.querySelector('[data-msw="link"]').onclick=()=>config.openLink('');
-    root.querySelector('[name="mode"]').value=mode;root.querySelector('[name="channels"]').value=channels;
-    root.querySelector('[name="mode"]').onchange=e=>{mode=e.target.value};root.querySelector('[name="channels"]').onchange=e=>{channels=e.target.value};
-    root.querySelector('[name="message"]').oninput=e=>{draft=e.target.value};root.querySelector('[name="sender"]').onchange=e=>{sender=e.target.value};
-    async function find(p){
-      const text=root.querySelector('[name="keyword"]').value.trim();if(!text)return;
-      const buttons=[...root.querySelectorAll('.msw-search button,[data-msw="prev"],[data-msw="next"]')];buttons.forEach(b=>b.disabled=true);
-      try{const d=await call('search',{keyword:text,page:p});if(epoch!==generation)return;if(needsLink(d))return;if(!d.ok)throw Error(d.message);keyword=text;page=p;results=d.students;root.querySelector('.msw-page').textContent=page+' 페이지';paintPeople(root);notice(root,results.length?`${results.length}개의 학부모 연락처를 찾았습니다.`:'이 페이지에 검색 결과가 없습니다. 학생명 또는 이전 페이지를 확인하세요.')}catch(e){notice(root,e.message,true)}finally{buttons.forEach(b=>b.disabled=false)}
-    }
-    root.querySelector('.msw-search').onsubmit=e=>{e.preventDefault();find(1)};
-    root.querySelector('[data-msw="prev"]').onclick=()=>find(Math.max(1,page-1));root.querySelector('[data-msw="next"]').onclick=()=>find(page+1);
-    root.querySelector('[data-msw="new"]').onclick=()=>{if(busy)return;if(pending()&&!confirm('엠스위치 발송내역에서 기존 요청 결과를 확인했나요? 새 요청은 별도 발송으로 처리됩니다.'))return;try{remember(null);notice(root,'새 요청을 보낼 수 있습니다. 받는 사람과 내용을 확인하세요.');paintSelected(root)}catch(e){notice(root,e.message,true)}};
-    root.querySelector('[data-msw="send"]').onclick=async()=>{
-      if(busy||pending())return;if(!draft.trim())return notice(root,'문자내용을 입력하세요.',true);
-      const count=chosen.size;
-      if(!confirm(`학부모 ${count}명에게 ${mode==='ad'?'광고성':'정보성'} 문자를 발송할까요?`))return;
-      let requestId;try{requestId=uuid();remember({request_id:requestId,at:new Date().toISOString(),state:'pending'})}catch(e){notice(root,e.message,true);return}
-      busy=true;paintSelected(root);notice(root,'발송을 요청하고 있습니다.');
-      try{const d=await call('send',{request_id:requestId,recipients:[...chosen.values()].map(p=>p.selection),message:draft,mode,channels,sender});if(epoch!==generation)return;remember({request_id:requestId,at:new Date().toISOString(),state:d.state||'unknown'});notice(root,d.message,!d.ok);if(d.needs_link)needsLink(d)}catch(e){if(epoch!==generation)return;local('send.unknown',{send_id:requestId});notice(root,'발송 결과 확인 불가: '+e.message+' 이미 접수되었을 수 있으므로 엠스위치 발송내역을 먼저 확인하세요.',true)}finally{if(epoch===generation){busy=false;paintSelected(root)}}
-    };
-    try{const d=await call('status');if(epoch!==generation||!root.isConnected)return;status=d;if(!sender)sender=(d.replies?.find(x=>x.default)||d.replies?.[0])?.phone||'';root.querySelector('[name="sender"]').innerHTML=options();notice(root,pending()?'이 브라우저에 이전 발송 요청이 남아 있습니다. 발송내역 확인 후 새 요청을 시작하세요.':d.linked?`${d.name}님 계정으로 발송합니다.`:'먼저 엠스위치 계정을 연동해 주세요.');paintSelected(root);if(d.needs_link)needsLink(d)}catch(e){notice(root,e.message,true)}
-  }
-  function reset(){++generation;++linkVersion;status=null;logs=[];chosen.clear();results=[];page=1;keyword='';draft='';mode='info';channels='har';sender='';busy=false}
-  function demo(path,body){
-    local('preview',{path,message:'미리보기 · 실제 엠스위치에 접속하지 않습니다.'});
-    if(path==='diagnostics')return Promise.resolve({ok:true,message:'미리보기에서는 서버에 연결하지 않습니다. 배포한 사이트에서 실행하세요.'});
-    if(path==='link'){status={ok:true,linked:true,username:body.username,name:'미리보기 강사',replies:[{phone:'0200000000',default:true}]};return Promise.resolve({...status,message:'미리보기 연동 완료 · 실제 저장하지 않았습니다.'})}
-    if(path==='unlink'){status=null;return Promise.resolve({ok:true,linked:false,message:'미리보기 연동 삭제'})}
-    if(path==='status'||path==='auto')return Promise.resolve(status||{ok:true,linked:false,username:'',replies:[]});
-    if(path==='search')return Promise.resolve({ok:true,students:[1,2].map(i=>({key:'demo'+i,name:body.keyword+(i===2?' (동명이인)':''),phone:'010-0000-000'+i,parent:1,selection:'demo'+i}))});
-    return Promise.resolve({ok:true,state:'accepted',message:'미리보기 접수 완료 · 실제 문자는 발송되지 않았습니다.'});
-  }
-  window.MiraeSMS={configure:c=>{config=c},auto,mountLink,mountSend,reset};
+/* Browser-direct MSwitch. Success requires readable credentialed CORS responses from MSwitch. */
+(()=>{'use strict';
+const LOGIN='https://mswitch.t-ime.com',REMOTE='https://pmams.t-ime.com',SMS='/sms/SmsSendMngtN/';
+let cfg={},meta=null,owner='',generation=0,selected=new Map(),busy=false,blockedSend=false,lastAuto='',pending=null;
+const $=(s,r=document)=>r.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),digits=s=>String(s||'').replace(/\D/g,''),log=(event,d={})=>window.MiraeStore.log('mswitch.'+event,d);
+function official(){return '<a class="btn" href="https://mswitch.t-ime.com/login.do" target="_blank" rel="noopener noreferrer">엠스위치 공식 사이트 열기</a>'}
+function logsHTML(){return '<p>계정 저장과 실제 로그인 성공은 별개입니다. 응답을 읽지 못하면 발송 성공으로 표시하지 않습니다.</p><textarea class="v2-log msw-log" readonly aria-label="엠스위치 로그"></textarea><button class="btn" data-msw-copy>로그 복사</button> <button class="btn" data-msw-save-log>텍스트 파일 저장</button>'}
+function bindLogs(root){const area=$('.msw-log',root);const paint=()=>{if(area.isConnected){area.value=window.MiraeStore.logs();area.scrollTop=area.scrollHeight}else window.removeEventListener('mirae-log',paint)};paint();window.addEventListener('mirae-log',paint);$('[data-msw-copy]',root).onclick=async()=>{try{await navigator.clipboard.writeText(area.value);cfg.toast('복사했습니다.')}catch{area.focus();area.select();cfg.toast('Ctrl+C로 복사하세요.')}};$('[data-msw-save-log]',root).onclick=()=>{const u=URL.createObjectURL(new Blob([area.value],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='mirae-v2-mswitch-log.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),3000)}}
+async function request(base,path,{form,json,credentials=true}={}){
+ const url=new URL(path,base);if(![LOGIN,REMOTE].includes(url.origin))throw Error('허용되지 않은 연동 주소입니다.');
+ const method=form||json?'POST':'GET',headers={},opts={method,credentials:credentials?'include':'omit',mode:'cors',redirect:'follow',signal:AbortSignal.timeout(15000)};
+ if(form){headers['Content-Type']='application/x-www-form-urlencoded;charset=UTF-8';opts.body=new URLSearchParams(form)}
+ if(json){headers['Content-Type']='application/json;charset=UTF-8';headers['X-Requested-With']='XMLHttpRequest';opts.body=JSON.stringify(json)}opts.headers=headers;
+ log('request',{host:url.hostname,path:url.pathname,method,credentialed:credentials});let r;
+ try{r=await fetch(url,opts)}catch(e){log('response_unreadable',{host:url.hostname,path:url.pathname,kind:e.name});throw Error('브라우저에서 엠스위치 응답을 읽지 못했습니다. CORS·쿠키 제한 또는 네트워크 오류일 수 있습니다. HTML에서 이 제한을 해제할 수 없습니다.')}
+ log('response',{host:url.hostname,path:url.pathname,status:r.status});if(!r.ok)throw Error('엠스위치 HTTP '+r.status+' 응답입니다.');return r;
+}
+async function post(path,form={}){const r=await request(REMOTE,path,{form});let d;try{d=await r.json()}catch{throw Error('엠스위치 세션이 종료되었거나 응답 형식이 바뀌었습니다. 다시 연동하세요.')}return d}
+async function connect(credentials,keepSelection=false){
+ const g=generation,id=cfg.user()?.id;meta=null;if(!keepSelection||owner!==id)selected.clear();
+ const d=await(await request(LOGIN,'/login.json',{form:{LOGIN_ID:credentials.username,LOGIN_PWD:credentials.password}})).json();
+ const ticket=d.S_ARI_SECURE_TOKEN||d.LOGIN_TOKEN,center=String(d.S_CENTER_SEQ||d.CENTER_SEQ||'');
+ log('login.first_stage',{code:String(d.result_code||''),has_ticket:!!ticket});
+ if(String(d.result_code||'0000')!=='0000'||!ticket||!center)throw Error('엠스위치 아이디·비밀번호를 확인하세요.');
+ if(d.WWW&&d.WWW.replace(/\/$/,'')!==REMOTE)throw Error('이 계정은 기존 HAR과 다른 서버를 사용합니다. 새 로그인 기록이 필요합니다.');
+ await request(REMOTE,'/tokenLogin.do?'+new URLSearchParams({CENTER_SEQ:center,LOGIN_TOKEN:ticket}));
+ let name='';for(const path of ['/main/profile.do','/main/top.do']){const html=await(await request(REMOTE,path)).text();const dom=new DOMParser().parseFromString(html,'text/html');name=dom.querySelector('.log_info_btn strong')?.textContent?.trim()||'';if(name)break}
+ if(!name)throw Error('로그인한 이름을 확인하지 못했습니다. 연동 성공으로 처리하지 않았습니다.');
+ const b=(await post('/main/balanceInfo.json')).balanceInfoMngt||{},group=String(b.GROUP_CODE||'');if(!group||b.CENTER_SEQ!=null&&String(b.CENTER_SEQ)!==center)throw Error('로그인 센터 정보를 확인하지 못했습니다.');
+ const service=String((await post(SMS+'selectCenterServiceCode.json',{strCenterSeq:center})).info?.SERVICE_CODE||'');
+ const list=(await post(SMS+'selectReplyList.json')).info;const replies=Array.isArray(list)?list.map(x=>digits(x.ORG_REPLY_TEL||x.REPLY_TEL)).filter(Boolean):[];
+ if(!service||!replies.length)throw Error('문자 서비스 코드 또는 발신번호를 확인하지 못했습니다.');
+ if(g!==generation||id!==cfg.user()?.id)throw Error('로그인한 사이트 계정이 변경되었습니다. 다시 연동하세요.');
+ meta={name,center,group,service,replies,until:Date.now()+15*60000};owner=id;blockedSend=false;log('login.verified',{sender_count:replies.length});return meta;
+}
+async function connectSaved(keepSelection=false){if(pending)return pending;pending=(async()=>{const c=await cfg.api('/api/mswitch/credentials');if(!c.username)throw Error('개인설정 → 엠스위치 연동에서 계정을 저장해 주세요.');return connect(c,keepSelection)})();try{return await pending}finally{pending=null}}
+async function ready(force=false){if(force||!meta||owner!==cfg.user()?.id||meta.until<Date.now())await connectSaved(true);return meta}
+async function mountLink(root,message=''){
+ root.innerHTML='<p><b>브라우저 직접 연결 시험</b> · 앞선 테스트에서는 엠스위치 응답을 읽지 못했습니다. 별도 중계 서버는 사용하지 않습니다.</p><form class="msw-link-form"><label class="field">엠스위치 아이디<input name="username" autocomplete="username" required></label><label class="field">엠스위치 비밀번호<input name="password" type="password" autocomplete="current-password" required></label><button class="btn primary" type="submit">저장 · 연동하기</button> <button class="btn" type="button" data-msw-diag>비밀번호 없이 연결 진단</button> <button class="btn" type="button" data-msw-remove>저장 계정 삭제</button></form><p class="msw-result" role="status"></p>'+official()+logsHTML();bindLogs(root);const result=$('.msw-result',root);result.textContent=message;
+ try{const c=await cfg.api('/api/mswitch/credentials');if(root.isConnected){$('[name=username]',root).value=c.username||'';$('[name=password]',root).value=c.password||'';if(!message)result.textContent=c.username?'이 사이트 사용자에게 계정이 저장되어 있습니다. 현재 탭에서 연동을 확인하세요.':'저장된 엠스위치 계정이 없습니다.'}}catch(e){result.textContent=e.message}
+ $('.msw-link-form',root).onsubmit=async e=>{e.preventDefault();if(busy)return;busy=true;const b=$('[type=submit]',root);b.disabled=true;result.textContent='계정 저장 및 로그인 확인 중…';try{const c={username:$('[name=username]',root).value.trim(),password:$('[name=password]',root).value};await cfg.api('/api/mswitch/credentials',{method:'POST',body:c});const m=await connect(c);result.textContent=m.name+'님, 실제 엠스위치 로그인을 확인했습니다.';cfg.changed?.()}catch(err){result.textContent='계정 저장 후 연동 확인 실패: '+err.message;log('link.failed',{message:err.message})}finally{busy=false;b.disabled=false}};
+ $('[data-msw-remove]',root).onclick=async()=>{if(busy)return;try{await cfg.api('/api/mswitch/credentials',{method:'POST',body:{remove:true}});reset();$('[name=username]',root).value='';$('[name=password]',root).value='';result.textContent='저장된 계정을 삭제했습니다.'}catch(e){result.textContent=e.message}};
+ $('[data-msw-diag]',root).onclick=async()=>{if(busy)return;busy=true;result.textContent='진단 중…';const lines=[];try{for(const host of [LOGIN,REMOTE])try{await request(host,host===LOGIN?'/login.do':'/index.do',{credentials:false});lines.push(host+' · 응답 읽기 성공')}catch(e){lines.push(host+' · 응답 읽기 실패')}result.textContent=lines.join('\n')+'\n이 진단은 비밀번호 없이 실행하며, 로그인·문자 API 허용 여부를 확정하지 않습니다.'}finally{busy=false}};
+}
+async function mount(root){
+ selected.clear();let page=1,lastKeyword='';root.innerHTML='<h1>문자보내기</h1><p>엠스위치 직접 연결이 성공한 경우에만 이 화면에서 발송할 수 있습니다.</p><button class="btn" data-msw-link>엠스위치 연동</button> '+official()+'<div class="msw-result" role="status"></div><div class="v2-sms-grid"><section class="section"><h2>받는 학부모</h2><form data-msw-search><input name="keyword" class="input" placeholder="학생명" required><button class="btn" type="submit">엠스위치 검색</button> <button type="button" class="btn" data-msw-local>사이트에 등록한 번호 조회</button></form><div data-msw-results></div><button class="btn" data-msw-more hidden>다음 검색 결과</button><p data-msw-count>학생 0명 · 학부모 0명</p></section><section class="section"><h2>문자 내용</h2><label class="field">종류<select name="mode"><option value="info">정보성</option><option value="ad">광고성 · (광고) 자동 추가</option></select></label><label class="field">발송 경로<select name="channels"><option value="har">HAR 기준 · SMS/앱/알림톡</option><option value="sms">SMS만</option></select></label><label class="field">발신번호<select name="sender"><option value="">연동 후 불러옵니다</option></select></label><textarea name="message" class="v2-message" maxlength="2000" placeholder="문자 내용을 입력하세요"></textarea><button class="btn primary" data-msw-send>발송</button><button class="btn" data-msw-unlock hidden>발송내역 확인 완료 · 새 발송 준비</button><p>엠스위치에 없는 수신자는 공식 사이트에서 직접 입력해 주세요. 필수 학생 식별값을 임의로 만들지 않습니다.</p></section></div>'+logsHTML();bindLogs(root);
+ const result=$('.msw-result',root),renderSenders=()=>{if(meta)$('[name=sender]',root).innerHTML=meta.replies.map(p=>'<option>'+p+'</option>').join('')};renderSenders();result.textContent=meta?meta.name+'님 · 현재 탭에서 연결 확인됨':'현재 엠스위치 연결이 확인되지 않았습니다.';
+ $('[data-msw-link]',root).onclick=()=>cfg.openLink();
+ const display=rows=>{$('[data-msw-results]',root).innerHTML=rows.length?rows.map((x,i)=>`<label class="v2-recipient"><input type="checkbox" data-recipient="${i}" ${selected.has(x.key)?'checked':''}>${esc(x.name)} · 학부모 ${x.slot==='2'?2:1} · ${esc(x.phone)}</label>`).join(''):'검색 결과가 없습니다.';root.querySelectorAll('[data-recipient]').forEach(el=>el.onchange=()=>{const x=rows[+el.dataset.recipient];el.checked?selected.set(x.key,x):selected.delete(x.key);$('[data-msw-count]',root).textContent='학생 0명 · 학부모 '+selected.size+'명'})};
+ async function search(next=false){if(busy)return;busy=true;try{const keyword=$('[name=keyword]',root).value.trim();if(!keyword)throw Error('학생명을 입력하세요.');if(!next||keyword!==lastKeyword){page=1;lastKeyword=keyword}const m=await ready();renderSenders();const d=await(await request(REMOTE,SMS+'selectMemList.json',{json:{s2id_autogen2:'',s2id_autogen2_search:'',strGrpCd:m.group,s2id_autogen3:'',s2id_autogen3_search:'',strCenterSeq:m.center,strStsCd:'10',strGradeCd:'',strKeyWordType:'01',strKeyWord:keyword,s2id_autogen1:'',s2id_autogen1_search:'',strClassSeq:'',page_num:'',page_size:'',sort_asc:'ASC',page}})).json();if(d.result!==true||!Array.isArray(d.data?.contents))throw Error('학생 검색 응답을 확인하지 못했습니다.');const rows=[];for(const raw of d.data.contents){if(String(raw.CENTER_SEQ)!==m.center||['CMEM_SEQ','MEM_SEQ','GRP_FIND_KEY','PRT_ORD'].some(k=>raw[k]==null||raw[k]===''))continue;for(const slot of ['','2']){const phone=digits(raw['PMPHONE'+slot]);if(phone.length>=9)rows.push({raw,slot,phone,key:raw.CMEM_SEQ+':'+slot,name:raw.CMEM_NAME||raw.MEM_NAME||''})}}display(rows);$('[data-msw-more]',root).hidden=d.data.contents.length===0;result.textContent=page+'페이지 · 학부모 '+rows.length+'명';log('search.complete',{page,parents:rows.length})}catch(e){result.textContent=e.message;log('search.failed',{message:e.message})}finally{busy=false}}
+ $('[data-msw-search]',root).onsubmit=e=>{e.preventDefault();search()};$('[data-msw-more]',root).onclick=()=>{page++;search(true)};
+ $('[data-msw-local]',root).onclick=async()=>{try{const d=await cfg.api('/api/mswitch/local-parents?q='+encodeURIComponent($('[name=keyword]',root).value.trim()));$('[data-msw-results]',root).innerHTML=d.rows.map(x=>`<p>${esc(x.name)} · ${esc(x.phone||'학부모 전화번호 미등록')}</p>`).join('')||'등록 학생이 없습니다.';result.textContent='사이트에 저장된 연락처입니다. 이 목록에는 엠스위치 발송용 식별값이 없어 발송 대상으로 추가하지 않습니다.'}catch(e){result.textContent=e.message}};
+ $('[data-msw-send]',root).onclick=async()=>{if(busy||blockedSend)return;const button=$('[data-msw-send]',root),sendOwner=cfg.user()?.id,sendGeneration=generation;busy=true;button.disabled=true;let attempted=false;try{const m=await ready(true),content=$('[name=message]',root).value.trim();if(!content||!selected.size||selected.size>100)throw Error('문자 내용과 학부모 1~100명을 선택하세요.');const sender=$('[name=sender]',root).value;if(!m.replies.includes(sender))throw Error('발신번호를 선택하세요.');if(!confirm('선택한 학부모 '+selected.size+'명에게 실제 문자를 발송할까요?'))return;busy=true;button.disabled=true;
+ const auth=(await post(SMS+'chkSmsAuth.json')).info||{};if(auth.SMS_USER_YN!=='Y'||auth.SMS_YN!=='Y')throw Error('엠스위치 문자 발송 권한이 없습니다.');const balance=await post(SMS+'chkBalance.json',{strCenterSeq:m.center,strSendCnt:String(selected.size),strInterLockSystemCode:'80'});if(String(balance.result_code)!=='0000')throw Error('발송 잔액 확인에 실패했습니다.');
+ const rows=new Map();for(const x of selected.values()){const id=x.raw.CENTER_SEQ+':'+x.raw.CMEM_SEQ;if(!rows.has(id)){const n=rows.size;rows.set(id,{...x.raw,CAPP_YN:null,PAPP_YN:null,PAPP_YN2:null,rowKey:n,_attributes:{rowNum:n+1,checked:true,disabled:false,checkDisabled:false,className:{row:[],column:{}}}})}rows.get(id)['PAPP_YN'+x.slot]='Y'}
+ const ad=$('[name=mode]',root).value==='ad',har=$('[name=channels]',root).value==='har',payload={KIND_CODE:'70',strIsStdYn:'0',strIsPrntYn:String(selected.size),BOOKING_DT:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()),BOOKING_TIME:'0000',BOOKING_YN:'N',REPLY_TEL:sender,WEB_LINK:'',TEST_RECV_TEL:'',strIsTest:'N',strCenterSeq:m.center,MSTRGRIDROWS:'[]',SUBGRIDROWS:JSON.stringify([...rows.values()]),EXISTS_YN:'N',MSG_TEMPLATE_SEQ:'',ATTACH_FILE:'',ORI_ATTACH_FILE:'',ATTACH_FILE_TITLE:'',THUMBNAIL_FILE:'',IS_APP_PUSH:har?'Y':'N',IS_SMS:'Y',SERVICE_CODE:m.service,CONTENTS:ad&&!content.startsWith('(광고)')?'(광고)'+content:content,TITLE:'',IS_ALARM_TALK:har?'Y':'N',IS_AD:ad?'Y':'N',TALK_TEMPLATE_SEQ:'',KAKAO_PROFILE_CODE:'',TEMPLATE_BTN:''};
+ if(sendOwner!==cfg.user()?.id||sendGeneration!==generation||owner!==sendOwner)throw Error('사이트 계정이 변경되어 발송을 중단했습니다.');if([...selected.values()].some(x=>String(x.raw.CENTER_SEQ)!==m.center))throw Error('문자 센터가 변경되었습니다. 학생을 다시 검색하세요.');attempted=true;blockedSend=true;sessionStorage.setItem('mirae-v2-send-pending','1');log('send.started',{parents:selected.size,students:0,fields:Object.keys(payload)});const d=await post(SMS+'alarmSend.json',payload),count=Number(d.strCount),fault=Number(d.strFault),accepted=String(d.result_code)==='0000'&&count===selected.size&&fault===0;log('send.result',{code:String(d.result_code||''),count:Number.isFinite(count)?count:null,faults:Number.isFinite(fault)?fault:null,accepted});result.textContent=accepted?'엠스위치가 '+count+'명 발송 요청을 접수했습니다. 실제 수신은 공식 사이트 발송내역에서 확인하세요.':'발송 결과가 불확실하거나 일부만 접수되었습니다. 재발송 전에 공식 사이트 발송내역을 확인하세요.';
+ }catch(e){result.textContent=attempted?'발송 결과 확인 불가. 이미 접수됐을 수 있으므로 공식 사이트 발송내역을 먼저 확인하세요.':e.message;log('send.failed',{attempted,message:attempted?'발송 결과 확인 불가':e.message})}finally{busy=false;button.disabled=blockedSend;$('[data-msw-unlock]',root).hidden=!blockedSend}};
+ if(sessionStorage.getItem('mirae-v2-send-pending')){blockedSend=true;$('[data-msw-send]',root).disabled=true;$('[data-msw-unlock]',root).hidden=false;result.textContent='이 탭에서 이전 발송을 시도했습니다. 공식 사이트 발송내역을 확인하고 새 발송을 준비하세요.'}
+ $('[data-msw-unlock]',root).onclick=()=>{if(!confirm('공식 엠스위치 발송내역을 확인했고, 새로운 발송을 준비할까요?'))return;sessionStorage.removeItem('mirae-v2-send-pending');blockedSend=false;selected.clear();$('[data-msw-results]',root).replaceChildren();$('[data-msw-count]',root).textContent='학생 0명 · 학부모 0명';$('[data-msw-send]',root).disabled=false;$('[data-msw-unlock]',root).hidden=true;result.textContent='학생을 다시 검색해서 선택하세요.'};
+}
+function reset(){generation++;meta=null;owner='';selected.clear();lastAuto='';}
+async function auto(){const u=cfg.user?.();if(!u||['parent','student'].includes(u.role)||lastAuto===u.id)return;lastAuto=u.id;try{const c=await cfg.api('/api/mswitch/credentials');if(!c.username)return;await connect(c)}catch(e){log('auto.failed',{message:e.message});cfg.openLink('엠스위치와의 자동 연동이 해지된 상태입니다. 다시 연동해주세요. '+e.message)}}
+window.MiraeSMS={configure(c){cfg=c},mount,mountLink,auto,reset};
 })();
