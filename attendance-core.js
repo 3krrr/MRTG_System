@@ -31,7 +31,7 @@ function api(D,a,route,body,q,ctx){
  if(!['admin','teacher'].includes(a.role))throw Error('출결은 강사·관리자 메뉴입니다.');
  for(const k of ['attendance','attendanceMessages','studentLinks'])D[k]||=[];
  const now=ctx.now||new Date(),nowISO=now.toISOString(),day=korea(now).date,uid=ctx.uid;
- const classFor=id=>{const c=D.classes.find(c=>c.id===id);if(!c||a.role!=='admin'&&![c.teacher_id,c.assistant_teacher_id].includes(a.id))throw Error('담당 반의 출결만 열 수 있습니다.');return c};
+ const classFor=id=>{const c=D.classes.find(c=>c.id===id);if(!c||a.role!=='admin'&&!a.permissions?.includes('all_classes')&&![c.teacher_id,c.assistant_teacher_id].includes(a.id))throw Error('담당 반의 출결만 열 수 있습니다.');return c};
  const studentFor=(c,id,date)=>{const s=D.students.find(s=>s.id===id);if(!s||!D.enrollments.some(e=>e.class_id===c.id&&e.student_id===id&&e.joined_on<=date))throw Error('이 반에 등록된 학생이 아닙니다.');return s};
  const ownMsg=id=>{const m=D.attendanceMessages.find(x=>x.id===id);if(!m||m.owner_id!==a.id)throw Error('본인이 저장한 알림만 처리할 수 있습니다.');classFor(m.class_id);return m};
  if(route.endsWith('/read')){
@@ -75,7 +75,7 @@ function api(D,a,route,body,q,ctx){
   const account=D.mswitch[a.id]?.username;if(!account||account!==body.account_username)throw Error('개인 엠스위치 계정을 먼저 연결하세요.');const messages=[];
   for(const item of body.items){const m=ownMsg(item.id),r=D.attendance.find(r=>r.id===m.id);if(m.state==='dispatching'&&m.job_id===body.job_id){messages.push(copy(m));continue}if(m.state!=='pending'||!['present','late'].includes(r?.status))continue;
    if(!Array.isArray(item.selected)||item.selected.length<1||item.selected.length>2||item.selected.some(x=>!x.raw||!['CMEM_SEQ','MEM_SEQ','GRP_FIND_KEY','PRT_ORD','CENTER_SEQ'].every(k=>String(x.raw[k]??'')!=='')))throw Error('매칭된 학부모 식별값이 없습니다.');
-   Object.assign(m,{state:'dispatching',job_id:body.job_id,selected:copy(item.selected),account_username:account,updated_at:nowISO});messages.push(copy(m));
+   Object.assign(m,{notification_at:nowISO,message:message(classFor(m.class_id).name,D.students.find(s=>s.id===m.student_id).name,nowISO),state:'dispatching',job_id:body.job_id,selected:copy(item.selected),account_username:account,updated_at:nowISO});messages.push(copy(m));
   }
   return{ok:true,messages};
  }
