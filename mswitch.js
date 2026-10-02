@@ -54,5 +54,16 @@ async function mount(root){
 }
 function reset(){generation++;roster=null;meta=null;owner='';selected.clear();lastAuto='';}
 async function auto(){const u=cfg.user?.();if(!u||['parent','student'].includes(u.role)||lastAuto===u.id||window.MiraePC?.state!=='connected')return;lastAuto=u.id;try{const g=generation,c=await cfg.api('/api/mswitch/credentials');if(g!==generation||u.id!==cfg.user()?.id||!c.username)return;await connect({...c,_site_owner:u.id})}catch(e){if(u.id!==cfg.user()?.id)return;log('auto.failed',{message:e.message});cfg.openLink('엠스위치와의 자동 연동이 해지된 상태입니다. 다시 연동해주세요. '+e.message)}}
-window.MiraeSMS={configure(c){cfg=c},mount,mountLink,auto,reset};
+let rosterPending=null;
+async function getRoster(force=false,onProgress){
+ const c=await credentials(),id=cfg.user()?.id,g=generation;
+ if(!force&&roster&&owner===id&&roster.account_username===c.username)return roster;
+ if(rosterPending)return rosterPending;
+ rosterPending=(async()=>{const d=await window.MiraePC.run('mswitch.roster',c,{onProgress});if(id!==cfg.user()?.id||g!==generation)throw Error('로그인 계정이 바뀌었습니다.');if(!Array.isArray(d.rows)||!Array.isArray(d.students)||d.student_count!==d.students.length)throw Error('전체 학생 명단의 수량을 확인하지 못했습니다.');roster={...d,account_username:c.username};meta={...d.meta,until:Date.now()+15*60000};owner=id;return roster})();try{return await rosterPending}finally{rosterPending=null}
+}
+async function sendAttendance(items,requestId,onProgress,expectedAccount){
+ if(busy)throw Error('엠스위치에서 다른 작업을 처리 중입니다. 잠시 후 대기 알림 보내기를 눌러 주세요.');
+ busy=true;try{const c=await credentials();if(expectedAccount&&expectedAccount!==c.username)throw Error('출결 저장 당시 엠스위치 계정과 현재 계정이 다릅니다.');return await window.MiraePC.run('mswitch.attendance',{...c,items},{requestId,onProgress})}finally{busy=false}
+}
+window.MiraeSMS={configure(c){cfg=c},mount,mountLink,auto,reset,getRoster,sendAttendance};
 })();
