@@ -1,7 +1,7 @@
 (()=>{'use strict';
 const tn=window.MiraeTimeNet,esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 tn.mount=async ctx=>{
- const {node,user,api,fieldsHtml,btn,toast}=ctx,actorID=user()?.id;if(!node)return;tn.save=null;
+ const {node,user,api,fieldsHtml,btn,toast}=ctx,actorID=user()?.id;if(!node)return;tn.save=null;if(window.MiraePC?.isMobile){node.innerHTML='<h2>타임넷 학생 명단</h2><p>타임넷 조회와 연결 설정은 학원 PC에서 사용합니다. 이미 불러온 학생 명단과 반 등록은 모바일에서도 이용할 수 있습니다.</p>';return}
  const $=s=>node.querySelector(s),$$=s=>[...node.querySelectorAll(s)],current=()=>node.isConnected&&actorID===user()?.id;
  try{const d=await api('/api/timenet/settings');if(!current())return;
  if(user().role!=='admin'){node.innerHTML='<h2>타임넷 학생 명단</h2><p>'+(d.managed?'최고관리자가 연결한 공통 계정으로 전체 학생 명단을 가져옵니다.':'최고관리자가 타임넷 공통 연결을 설정해야 합니다.')+'</p><p class="muted">학원 인터넷(외부 IP 119.196.240.*)에서 전체 학생을 조회합니다. 시트나 비밀번호를 직접 입력할 필요가 없습니다.</p>'+btn('학생 목록 불러오기','timenet-refresh')+'<p id="timenet-result" role="status"></p>';return}
