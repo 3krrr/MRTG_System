@@ -1,0 +1,1 @@
+{"version": "2.6.0", "connector_version": "2.3.0", "required_connector_version": "2.3.0", "features": ["attendance_overview", "syllabus_sheet", "timenet_enrollment_sheet", "makeups"]}
