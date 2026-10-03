@@ -1,7 +1,7 @@
 {
-  "version": "3.5.0",
-  "connector_version": "2.5.0",
-  "required_connector_version": "2.5.0",
+  "version": "3.6.0",
+  "connector_version": "2.6.0",
+  "required_connector_version": "2.6.0",
   "features": [
     "pwa_install",
     "onesignal_push",
@@ -34,17 +34,14 @@
     "mobile_pc_warning",
     "staff_resource_accordion",
     "oversight_rank_scope",
-    "communication_ledger",
-    "integrated_lesson_tests",
-    "lesson_video_audience",
-    "lesson_feedback_sheet",
-    "mobile_pc_warning",
-    "staff_resource_accordion",
-    "oversight_rank_scope",
     "mswitch_contact_add",
     "permission_account_deletion",
     "parent_active_courses",
     "parent_bulk_status",
-    "refined_list_design"
+    "refined_list_design",
+    "parent_phone_manager",
+    "nonblocking_contact_registry",
+    "student_login",
+    "publication_audience"
   ]
 }
