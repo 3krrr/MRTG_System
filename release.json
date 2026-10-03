@@ -1,1 +1,31 @@
-{"version": "3.1.0", "connector_version": "2.3.0", "required_connector_version": "2.3.0", "features": ["pwa_install", "onesignal_push", "private_push_queue", "attendance_push_sms_fallback", "2230_reminder", "staff_resources", "subject_scope", "teacher_usage_dashboard", "course_makeup_targets", "attendance_overview", "syllabus_sheet", "ios_install_guide", "kakao_external_install", "remember_login", "opening_75"]}
+{
+  "version": "3.2.0",
+  "connector_version": "2.3.0",
+  "required_connector_version": "2.3.0",
+  "features": [
+    "pwa_install",
+    "onesignal_push",
+    "private_push_queue",
+    "attendance_push_sms_fallback",
+    "2230_reminder",
+    "staff_resources",
+    "subject_scope",
+    "teacher_usage_dashboard",
+    "course_makeup_targets",
+    "attendance_overview",
+    "syllabus_sheet",
+    "ios_install_guide",
+    "kakao_external_install",
+    "remember_login",
+    "opening_75",
+    "push_batch_history",
+    "device_delivery_receipt",
+    "notification_inbox",
+    "course_records",
+    "login_activity_dashboard",
+    "rank_hierarchy",
+    "timenet_course_assignment",
+    "bundled_font",
+    "instant_opening"
+  ]
+}
