@@ -1,7 +1,7 @@
 {
-  "version": "3.4.0",
-  "connector_version": "2.4.0",
-  "required_connector_version": "2.4.0",
+  "version": "3.5.0",
+  "connector_version": "2.5.0",
+  "required_connector_version": "2.5.0",
   "features": [
     "pwa_install",
     "onesignal_push",
