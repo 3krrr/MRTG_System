@@ -1,5 +1,5 @@
 {
-  "version": "3.2.0",
+  "version": "3.3.0",
   "connector_version": "2.3.0",
   "required_connector_version": "2.3.0",
   "features": [
@@ -26,6 +26,13 @@
     "rank_hierarchy",
     "timenet_course_assignment",
     "bundled_font",
-    "instant_opening"
+    "instant_opening",
+    "communication_ledger",
+    "integrated_lesson_tests",
+    "lesson_video_audience",
+    "lesson_feedback_sheet",
+    "mobile_pc_warning",
+    "staff_resource_accordion",
+    "oversight_rank_scope"
   ]
 }
