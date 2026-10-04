@@ -1,0 +1,1 @@
+(()=>{try{if(performance.getEntriesByType("navigation")[0]?.type==="reload"&&sessionStorage.getItem("mirae-current-screen")&&(sessionStorage.getItem("mirae-v2-session")||localStorage.getItem("mirae-v2-session")))document.documentElement.classList.add("resume-screen")}catch{}})();

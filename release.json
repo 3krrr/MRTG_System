@@ -1,5 +1,5 @@
 {
-  "version": "261004",
+  "version": "261005",
   "connector_version": "2.7.0",
   "required_connector_version": "2.7.0",
   "features": [
@@ -69,6 +69,13 @@
     "single_mobile_scroll",
     "current_screen_refresh",
     "date_release",
-    "push_composer"
+    "push_composer",
+    "consultation_read_badge",
+    "staff_update_board",
+    "viewport_toast",
+    "fixed_command_palette",
+    "single_stylesheet",
+    "login_snapshot_reuse",
+    "minimal_page_headings"
   ]
 }
