@@ -1,5 +1,5 @@
 {
-  "version": "3.8.2",
+  "version": "261004",
   "connector_version": "2.7.0",
   "required_connector_version": "2.7.0",
   "features": [
@@ -63,6 +63,12 @@
     "keyboard_chat_composer",
     "topbar_staff_messenger",
     "staff_chat_push_deep_link",
-    "chat_profile_history_navigation"
+    "chat_profile_history_navigation",
+    "group_chat",
+    "chat_push_preview",
+    "single_mobile_scroll",
+    "current_screen_refresh",
+    "date_release",
+    "push_composer"
   ]
 }
