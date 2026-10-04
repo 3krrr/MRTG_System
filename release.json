@@ -1,5 +1,5 @@
 {
-  "version": "3.7.0",
+  "version": "3.8.0",
   "connector_version": "2.7.0",
   "required_connector_version": "2.7.0",
   "features": [
@@ -49,6 +49,13 @@
     "five_assistants",
     "private_teacher_videos",
     "homework_consultation_teacher_push",
-    "resource_pagination"
+    "resource_pagination",
+    "editable_first_registration_ids",
+    "confirmed_family_password_reset",
+    "shared_message_templates",
+    "human_activity_records",
+    "consultation_reply_fix",
+    "per_lesson_homework_maximum",
+    "private_staff_messenger"
   ]
 }
