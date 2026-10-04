@@ -1,8 +1,8 @@
 {
-  "version": "2.6.0",
-  "minimum_version": "2.6.0",
+  "version": "2.7.0",
+  "minimum_version": "2.7.0",
   "protocol": 1,
   "file": "MiraeConnectorSetup.exe",
-  "size": 8228352,
-  "sha256": "78e2a0b4c35e2ee3d41c2845a8721e4601e27b5f4ebb55af0716f792e468779b"
+  "size": 8247296,
+  "sha256": "d6e6afb9f6175b7bb5289253ac0daf5fb12005e88b602921e66f527ea79bdab0"
 }

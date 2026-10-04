@@ -1,7 +1,7 @@
 {
-  "version": "3.6.0",
-  "connector_version": "2.6.0",
-  "required_connector_version": "2.6.0",
+  "version": "3.7.0",
+  "connector_version": "2.7.0",
+  "required_connector_version": "2.7.0",
   "features": [
     "pwa_install",
     "onesignal_push",
@@ -42,6 +42,13 @@
     "parent_phone_manager",
     "nonblocking_contact_registry",
     "student_login",
-    "publication_audience"
+    "publication_audience",
+    "silent_connector_install",
+    "automatic_student_accounts",
+    "private_family_passwords",
+    "five_assistants",
+    "private_teacher_videos",
+    "homework_consultation_teacher_push",
+    "resource_pagination"
   ]
 }
