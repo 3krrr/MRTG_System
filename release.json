@@ -1,7 +1,7 @@
 {
-  "version": "261005",
-  "connector_version": "2.7.0",
-  "required_connector_version": "2.7.0",
+  "version": "261005_3",
+  "connector_version": "2.8.0",
+  "required_connector_version": "2.8.0",
   "features": [
     "pwa_install",
     "onesignal_push",
@@ -76,6 +76,15 @@
     "fixed_command_palette",
     "single_stylesheet",
     "login_snapshot_reuse",
-    "minimal_page_headings"
+    "minimal_page_headings",
+    "compact_mobile_grid",
+    "isolated_page_requests",
+    "readonly_consultation_ui",
+    "attendance_past_schedule_only",
+    "resource_draft_guard",
+    "scoped_table_sort_handlers",
+    "pc_kakao_friend",
+    "kakao_saved_staff_contact",
+    "kakao_idempotent_request"
   ]
 }
