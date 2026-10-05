@@ -1,5 +1,5 @@
 {
-  "version": "261005_7",
+  "version": "261005_8",
   "connector_version": "2.9.1",
   "required_connector_version": "2.9.1",
   "features": [
@@ -105,7 +105,9 @@
     "메뉴 높이에 맞춘 즉시 순차 펼침",
     "Time Education · 로그인 M 제거",
     "모바일 전체 화면 로그인",
-    "PC 오프닝 없이 바로 로그인"
+    "PC 오프닝 없이 바로 로그인",
+    "android_chrome_install_handoff",
+    "ios_safari_install_handoff"
   ],
   "released_at": "2026-10-05"
 }
