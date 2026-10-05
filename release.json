@@ -1,7 +1,7 @@
 {
-  "version": "261005_4",
-  "connector_version": "2.9.0",
-  "required_connector_version": "2.9.0",
+  "version": "261005_5",
+  "connector_version": "2.9.1",
+  "required_connector_version": "2.9.1",
   "features": [
     "pwa_install",
     "onesignal_push",
@@ -87,6 +87,15 @@
     "kakao_saved_staff_contact",
     "kakao_idempotent_request",
     "kakao_send_only",
-    "parallel_pc_kakao_lane"
+    "parallel_pc_kakao_lane",
+    "repeat_kakao_signal",
+    "kakao_restore_window",
+    "chat_list_profile",
+    "grouped_permission_navigation",
+    "personal_start_screen",
+    "personal_messenger_phone_sync",
+    "consultation_date_delete",
+    "name_student_id",
+    "parent_list_fast_open"
   ]
 }
