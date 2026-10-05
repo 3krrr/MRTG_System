@@ -1,7 +1,7 @@
 {
-  "version": "261005_3",
-  "connector_version": "2.8.0",
-  "required_connector_version": "2.8.0",
+  "version": "261005_4",
+  "connector_version": "2.9.0",
+  "required_connector_version": "2.9.0",
   "features": [
     "pwa_install",
     "onesignal_push",
@@ -85,6 +85,8 @@
     "scoped_table_sort_handlers",
     "pc_kakao_friend",
     "kakao_saved_staff_contact",
-    "kakao_idempotent_request"
+    "kakao_idempotent_request",
+    "kakao_send_only",
+    "parallel_pc_kakao_lane"
   ]
 }
