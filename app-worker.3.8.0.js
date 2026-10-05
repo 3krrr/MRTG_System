@@ -1,8 +1,0 @@
-const CACHE='mirae-shell-3.8.0',ROOT=new URL('./',self.location.href);
-self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')self.skipWaiting()});
-self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);try{for(const url of [new URL('index.html',ROOT),new URL('icons/mirae-192.png',ROOT)]){const response=await fetch(new Request(url,{cache:'reload'}));if(!response.ok)throw Error('Shell preload failed');await cache.put(url,response)}}catch{}await self.skipWaiting()})()));
-self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('mirae-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',event=>{const r=event.request,u=new URL(r.url);if(r.method!=='GET'||u.origin!==ROOT.origin||!u.pathname.startsWith(ROOT.pathname)||u.pathname.includes('/push/')||u.pathname.endsWith('/config.js')||u.pathname.includes('/downloads/'))return;
- const staticAsset=/\.(?:js|css|png|webmanifest|woff2)$/.test(u.pathname),navigation=r.mode==='navigate',release=u.pathname.endsWith('/release.json');if(!staticAsset&&!navigation&&!release)return;
- event.respondWith((async()=>{try{const response=await fetch(new Request(r,{cache:navigation||release||/\.(?:js|css|webmanifest)$/.test(u.pathname)?'no-store':r.cache}));if(response.ok&&response.type==='basic'&&!release){const cache=await caches.open(CACHE);await cache.put(r,response.clone())}return response}catch(error){if(release)throw error;const cache=await caches.open(CACHE),cached=await cache.match(r);if(cached)return cached;if(navigation)return await cache.match(new URL('index.html',ROOT))||Response.error();return Response.error()}})());
-});
