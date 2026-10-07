@@ -1,5 +1,5 @@
 {
-  "version": "261005_8",
+  "version": "261008",
   "connector_version": "2.9.1",
   "required_connector_version": "2.9.1",
   "features": [
@@ -107,7 +107,15 @@
     "모바일 전체 화면 로그인",
     "PC 오프닝 없이 바로 로그인",
     "android_chrome_install_handoff",
-    "ios_safari_install_handoff"
+    "ios_safari_install_handoff",
+    "database_verified_sessions",
+    "private_staff_password_hashes",
+    "database_class_subject_rank_authorization",
+    "protected_makeup_booking",
+    "private_backup_restore",
+    "employee_today_scope_tabs"
   ],
-  "released_at": "2026-10-05"
+  "released_at": "2026-10-08",
+  "required_sql": 31,
+  "security_version": 31
 }
