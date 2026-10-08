@@ -1,5 +1,5 @@
 {
-  "version": "261008",
+  "version": "261008_2",
   "connector_version": "2.9.1",
   "required_connector_version": "2.9.1",
   "features": [
@@ -113,9 +113,22 @@
     "database_class_subject_rank_authorization",
     "protected_makeup_booking",
     "private_backup_restore",
-    "employee_today_scope_tabs"
+    "employee_today_scope_tabs",
+    "staff_task_workflows",
+    "personal_recipient_groups_20",
+    "confirmed_student_transfers",
+    "subject_scoped_makeup_leaderboard",
+    "teacher_proxy_makeup_booking",
+    "family_holiday_calendar",
+    "account_scoped_input_drafts",
+    "four_character_password_minimum",
+    "default_student_password_checkbox",
+    "atomic_class_deletion",
+    "flat_attendance_navigation",
+    "recent_login_stream",
+    "localized_activity_paths"
   ],
   "released_at": "2026-10-08",
-  "required_sql": 31,
-  "security_version": 31
+  "required_sql": 32,
+  "security_version": 32
 }
