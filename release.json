@@ -1,5 +1,5 @@
 {
-  "version": "261008_2",
+  "version": "261008_3",
   "connector_version": "2.9.1",
   "required_connector_version": "2.9.1",
   "features": [
@@ -126,9 +126,16 @@
     "atomic_class_deletion",
     "flat_attendance_navigation",
     "recent_login_stream",
-    "localized_activity_paths"
+    "localized_activity_paths",
+    "automatic_safe_web_updates",
+    "teacher_assigned_makeup_schedule",
+    "completed_makeup_minutes",
+    "class_average_makeup_minutes",
+    "teacher_union_time_by_kind",
+    "mobile_hardware_back_guard",
+    "blank_student_password_1234"
   ],
   "released_at": "2026-10-08",
-  "required_sql": 32,
-  "security_version": 32
+  "required_sql": 33,
+  "security_version": 33
 }
