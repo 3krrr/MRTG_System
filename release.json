@@ -1,5 +1,5 @@
 {
-  "version": "261008_3",
+  "version": "261009",
   "connector_version": "2.9.1",
   "required_connector_version": "2.9.1",
   "features": [
@@ -133,9 +133,15 @@
     "class_average_makeup_minutes",
     "teacher_union_time_by_kind",
     "mobile_hardware_back_guard",
-    "blank_student_password_1234"
+    "blank_student_password_1234",
+    "board_unread_counts",
+    "school_login_private_credentials",
+    "subject_shared_usage_weights",
+    "course_score_reports",
+    "large_notification_onboarding",
+    "ios_icon_enlarged"
   ],
   "released_at": "2026-10-08",
-  "required_sql": 33,
-  "security_version": 33
+  "required_sql": 34,
+  "security_version": 34
 }
