@@ -1,7 +1,7 @@
 {
-  "version": "261010_9",
-  "connector_version": "2.9.4",
-  "required_connector_version": "2.9.4",
+  "version": "261010_10",
+  "connector_version": "2.9.5",
+  "required_connector_version": "2.9.5",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -15,9 +15,15 @@
     "enrollment_lesson_boundaries",
     "withdrawal_last_lesson",
     "withdrawal_segmented_filters",
-    "consistent_dialog_actions"
+    "consistent_dialog_actions",
+    "admin_managed_timenet_account",
+    "connector_worker_credential",
+    "family_course_progress",
+    "family_makeup_privacy",
+    "designed_empty_states",
+    "integrated_staff_messenger"
   ],
   "released_at": "2026-10-10",
-  "required_sql": 40,
-  "security_version": 40
+  "required_sql": 41,
+  "security_version": 41
 }
