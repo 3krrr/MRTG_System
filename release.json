@@ -1,5 +1,5 @@
 {
-  "version": "261010_8",
+  "version": "261010_9",
   "connector_version": "2.9.4",
   "required_connector_version": "2.9.4",
   "features": [
@@ -13,7 +13,9 @@
     "messenger_foreground_silence",
     "chat_notice_dismissal",
     "enrollment_lesson_boundaries",
-    "withdrawal_last_lesson"
+    "withdrawal_last_lesson",
+    "withdrawal_segmented_filters",
+    "consistent_dialog_actions"
   ],
   "released_at": "2026-10-10",
   "required_sql": 40,
