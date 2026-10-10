@@ -1,14 +1,17 @@
 {
-  "version": "261010_6",
-  "connector_version": "2.9.3",
-  "required_connector_version": "2.9.3",
+  "version": "261010_7",
+  "connector_version": "2.9.4",
+  "required_connector_version": "2.9.4",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
     "legacy_status_repair",
-    "mswitch_direct_login"
+    "withdrawal_approval_workflow",
+    "counselor_calendar",
+    "withdrawal_dashboard",
+    "mswitch_sso_then_direct"
   ],
   "released_at": "2026-10-10",
-  "required_sql": 38,
-  "security_version": 38
+  "required_sql": 39,
+  "security_version": 39
 }
