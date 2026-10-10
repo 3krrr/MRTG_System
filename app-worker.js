@@ -1,4 +1,4 @@
-const CACHE='mirae-shell-261010_2',ROOT=new URL('./',self.location.href);
+const CACHE='mirae-shell-261010_3',ROOT=new URL('./',self.location.href);
 self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')self.skipWaiting()});
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);try{for(const url of [new URL('index.html',ROOT),new URL('icons/mirae-192.png',ROOT)]){const response=await fetch(new Request(url,{cache:'reload'}));if(!response.ok)throw Error('Shell preload failed');await cache.put(url,response)}}catch{}await self.skipWaiting()})()));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('mirae-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
