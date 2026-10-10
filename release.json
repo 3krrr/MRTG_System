@@ -1,5 +1,5 @@
 {
-  "version": "261010_10",
+  "version": "261011_1",
   "connector_version": "2.9.5",
   "required_connector_version": "2.9.5",
   "features": [
@@ -21,9 +21,11 @@
     "family_course_progress",
     "family_makeup_privacy",
     "designed_empty_states",
-    "integrated_staff_messenger"
+    "integrated_staff_messenger",
+    "mswitch_credentials_route_repaired",
+    "full_width_messenger_shell"
   ],
-  "released_at": "2026-10-10",
+  "released_at": "2026-10-11",
   "required_sql": 41,
   "security_version": 41
 }
