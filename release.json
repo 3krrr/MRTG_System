@@ -1,7 +1,7 @@
 {
-  "version": "261011_2",
-  "connector_version": "2.9.6",
-  "required_connector_version": "2.9.6",
+  "version": "261011_3",
+  "connector_version": "2.9.7",
+  "required_connector_version": "2.9.7",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -26,7 +26,8 @@
     "full_width_messenger_shell",
     "connector_install_auth_renewal",
     "connector_required_version_shutdown",
-    "messenger_internal_tabs"
+    "messenger_internal_tabs",
+    "mswitch_contact_slow_response"
   ],
   "released_at": "2026-10-11",
   "required_sql": 42,
