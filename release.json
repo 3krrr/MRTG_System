@@ -1,5 +1,5 @@
 {
-  "version": "261010_7",
+  "version": "261010_8",
   "connector_version": "2.9.4",
   "required_connector_version": "2.9.4",
   "features": [
@@ -9,9 +9,13 @@
     "withdrawal_approval_workflow",
     "counselor_calendar",
     "withdrawal_dashboard",
-    "mswitch_sso_then_direct"
+    "mswitch_sso_then_direct",
+    "messenger_foreground_silence",
+    "chat_notice_dismissal",
+    "enrollment_lesson_boundaries",
+    "withdrawal_last_lesson"
   ],
   "released_at": "2026-10-10",
-  "required_sql": 39,
-  "security_version": 39
+  "required_sql": 40,
+  "security_version": 40
 }
