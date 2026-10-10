@@ -1,16 +1,14 @@
 {
-  "version": "261010_4",
-  "connector_version": "2.9.1",
-  "required_connector_version": "2.9.1",
+  "version": "261010_5",
+  "connector_version": "2.9.2",
+  "required_connector_version": "2.9.2",
   "features": [
-    "수업별 강사 영상 제목·링크 등록과 전용 권한",
-    "수학·과학·영재·과고 및 두 번째 분류",
-    "직급 권한 영구 저장·동시 수정 충돌 방지",
-    "학부모 학생 할당 해제·연락처 요약 정리",
-    "최고관리자 활동·로그인 기록 제외",
-    "엠스위치 목적별 진행 안내·타임넷 갱신 표시"
+    "clean_inbox_list_preserved_letter",
+    "family_assignment_integrity",
+    "legacy_status_repair",
+    "per_account_mswitch_server"
   ],
   "released_at": "2026-10-10",
-  "required_sql": 37,
-  "security_version": 37
+  "required_sql": 38,
+  "security_version": 38
 }
