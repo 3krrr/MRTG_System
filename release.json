@@ -1,7 +1,7 @@
 {
   "version": "261011_3",
-  "connector_version": "2.9.7",
-  "required_connector_version": "2.9.7",
+  "connector_version": "3.0.0",
+  "required_connector_version": "3.0.0",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -17,19 +17,20 @@
     "withdrawal_segmented_filters",
     "consistent_dialog_actions",
     "admin_managed_timenet_account",
-    "connector_worker_credential",
     "family_course_progress",
     "family_makeup_privacy",
     "designed_empty_states",
     "integrated_staff_messenger",
     "mswitch_credentials_route_repaired",
     "full_width_messenger_shell",
-    "connector_install_auth_renewal",
     "connector_required_version_shutdown",
     "messenger_internal_tabs",
-    "mswitch_contact_slow_response"
+    "mswitch_contact_slow_response",
+    "connector_parallel_network_jobs",
+    "connector_auth_removed",
+    "connector_upstream_ip_decision"
   ],
   "released_at": "2026-10-11",
-  "required_sql": 42,
-  "security_version": 42
+  "required_sql": 43,
+  "security_version": 43
 }
