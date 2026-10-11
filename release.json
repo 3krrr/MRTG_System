@@ -1,7 +1,7 @@
 {
-  "version": "261011_3",
-  "connector_version": "3.0.0",
-  "required_connector_version": "3.0.0",
+  "version": "261011_4",
+  "connector_version": "3.1.0",
+  "required_connector_version": "3.1.0",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -28,9 +28,27 @@
     "mswitch_contact_slow_response",
     "connector_parallel_network_jobs",
     "connector_auth_removed",
-    "connector_upstream_ip_decision"
+    "connector_upstream_ip_decision",
+    "mswitch_10min_snapshot",
+    "mswitch_30min_reuse",
+    "mswitch_login_credentials",
+    "mswitch_snapshot_age_ui",
+    "connector_parallel_network_jobs",
+    "connector_auth_removed",
+    "connector_upstream_ip_decision",
+    "mswitch_10min_snapshot",
+    "mswitch_30min_reuse",
+    "mswitch_login_credentials",
+    "mswitch_snapshot_age_ui",
+    "connector_parallel_network_jobs",
+    "connector_auth_removed",
+    "connector_upstream_ip_decision",
+    "mswitch_10min_snapshot",
+    "mswitch_30min_reuse",
+    "mswitch_login_credentials",
+    "mswitch_snapshot_age_ui"
   ],
   "released_at": "2026-10-11",
-  "required_sql": 43,
-  "security_version": 43
+  "required_sql": 44,
+  "security_version": 44
 }
