@@ -1,5 +1,5 @@
 {
-  "version": "261011_4",
+  "version": "261011_5",
   "connector_version": "3.1.0",
   "required_connector_version": "3.1.0",
   "features": [
@@ -33,22 +33,10 @@
     "mswitch_30min_reuse",
     "mswitch_login_credentials",
     "mswitch_snapshot_age_ui",
-    "connector_parallel_network_jobs",
-    "connector_auth_removed",
-    "connector_upstream_ip_decision",
-    "mswitch_10min_snapshot",
-    "mswitch_30min_reuse",
-    "mswitch_login_credentials",
-    "mswitch_snapshot_age_ui",
-    "connector_parallel_network_jobs",
-    "connector_auth_removed",
-    "connector_upstream_ip_decision",
-    "mswitch_10min_snapshot",
-    "mswitch_30min_reuse",
-    "mswitch_login_credentials",
-    "mswitch_snapshot_age_ui"
+    "mswitch_first_collection_recovery",
+    "connector_offline_update_notice"
   ],
   "released_at": "2026-10-11",
-  "required_sql": 44,
-  "security_version": 44
+  "required_sql": 45,
+  "security_version": 45
 }
