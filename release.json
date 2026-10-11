@@ -1,5 +1,5 @@
 {
-  "version": "261011_5",
+  "version": "261011_7",
   "connector_version": "3.1.0",
   "required_connector_version": "3.1.0",
   "features": [
@@ -34,9 +34,13 @@
     "mswitch_login_credentials",
     "mswitch_snapshot_age_ui",
     "mswitch_first_collection_recovery",
-    "connector_offline_update_notice"
+    "connector_offline_update_notice",
+    "pc_last_login_owner_only",
+    "lesson_date_enrollment_transfer",
+    "fast_scoped_reads",
+    "connector_version_check_dialog"
   ],
   "released_at": "2026-10-11",
-  "required_sql": 45,
-  "security_version": 45
+  "required_sql": 47,
+  "security_version": 47
 }
