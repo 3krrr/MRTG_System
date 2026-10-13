@@ -1,5 +1,5 @@
 {
-  "version": "261013_4",
+  "version": "261013_5",
   "connector_version": "3.1.0",
   "required_connector_version": "3.1.0",
   "features": [
@@ -61,9 +61,13 @@
     "parallel_screen_prefetch",
     "push_existing_window",
     "resilient_remembered_session",
-    "logout_draft_clear"
+    "logout_draft_clear",
+    "enrollment_per_student_atomic_save",
+    "enrollment_retry_receipts",
+    "parent_credentials_preview",
+    "centered_registration_progress"
   ],
   "released_at": "2026-10-13",
-  "required_sql": 51,
-  "security_version": 51
+  "required_sql": 52,
+  "security_version": 52
 }
