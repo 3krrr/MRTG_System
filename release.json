@@ -1,5 +1,5 @@
 {
-  "version": "261013_5",
+  "version": "261013_6",
   "connector_version": "3.1.0",
   "required_connector_version": "3.1.0",
   "features": [
@@ -65,9 +65,13 @@
     "enrollment_per_student_atomic_save",
     "enrollment_retry_receipts",
     "parent_credentials_preview",
-    "centered_registration_progress"
+    "centered_registration_progress",
+    "preserved_mswitch_contact_payload",
+    "timenet_phone_autofill",
+    "verified_contact_refresh",
+    "aligned_account_actions"
   ],
   "released_at": "2026-10-13",
-  "required_sql": 52,
-  "security_version": 52
+  "required_sql": 53,
+  "security_version": 53
 }
