@@ -1,5 +1,5 @@
 {
-  "version": "261013_2",
+  "version": "261013_3",
   "connector_version": "3.1.0",
   "required_connector_version": "3.1.0",
   "features": [
@@ -49,9 +49,14 @@
     "counsel_settings_dialog",
     "counsel_colored_full_calendar",
     "counsel_month_clear",
-    "office_table_clipboard"
+    "office_table_clipboard",
+    "enrollment_draft_fix",
+    "explicit_syllabus_save",
+    "automatic_parent_accounts",
+    "three_source_phone_review",
+    "school_grade_history"
   ],
   "released_at": "2026-10-13",
-  "required_sql": 50,
-  "security_version": 50
+  "required_sql": 51,
+  "security_version": 51
 }
