@@ -1,5 +1,5 @@
 {
-  "version": "261013_1",
+  "version": "261013_2",
   "connector_version": "3.1.0",
   "required_connector_version": "3.1.0",
   "features": [
@@ -45,9 +45,13 @@
     "student_shared_school_grades",
     "school_grades_author_override",
     "school_grades_collection",
-    "counsel_xlsx_bulk_import"
+    "counsel_xlsx_bulk_import",
+    "counsel_settings_dialog",
+    "counsel_colored_full_calendar",
+    "counsel_month_clear",
+    "office_table_clipboard"
   ],
   "released_at": "2026-10-13",
-  "required_sql": 49,
-  "security_version": 49
+  "required_sql": 50,
+  "security_version": 50
 }
