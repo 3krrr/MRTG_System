@@ -1,7 +1,7 @@
 {
-  "version": "261014_1",
-  "connector_version": "3.2.0",
-  "required_connector_version": "3.2.0",
+  "version": "261014_2",
+  "connector_version": "3.2.1",
+  "required_connector_version": "3.2.1",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -72,7 +72,9 @@
     "aligned_account_actions",
     "personal_timenet_verified_login",
     "timenet_counsel_history",
-    "timenet_batch_counsel_verified_save"
+    "timenet_batch_counsel_verified_save",
+    "timenet_exria_json_headers",
+    "live_contact_snapshot_updates"
   ],
   "released_at": "2026-10-14",
   "required_sql": 54,
