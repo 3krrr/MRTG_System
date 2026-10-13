@@ -1,7 +1,7 @@
 {
-  "version": "261013_6",
-  "connector_version": "3.1.0",
-  "required_connector_version": "3.1.0",
+  "version": "261014_1",
+  "connector_version": "3.2.0",
+  "required_connector_version": "3.2.0",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -69,9 +69,12 @@
     "preserved_mswitch_contact_payload",
     "timenet_phone_autofill",
     "verified_contact_refresh",
-    "aligned_account_actions"
+    "aligned_account_actions",
+    "personal_timenet_verified_login",
+    "timenet_counsel_history",
+    "timenet_batch_counsel_verified_save"
   ],
-  "released_at": "2026-10-13",
-  "required_sql": 53,
-  "security_version": 53
+  "released_at": "2026-10-14",
+  "required_sql": 54,
+  "security_version": 54
 }
