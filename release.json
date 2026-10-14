@@ -1,5 +1,5 @@
 {
-  "version": "261014_8",
+  "version": "261014_9",
   "connector_version": "3.3.1",
   "required_connector_version": "3.3.1",
   "features": [
@@ -99,9 +99,13 @@
     "upstream_100_second_timeout",
     "counsel_loading_states",
     "report_course_scope",
-    "counselor_syllabus_library"
+    "counselor_syllabus_library",
+    "official_identity_attendance_rows",
+    "protected_duplicate_enrollment_cleanup",
+    "login_phone_comparison_prefetch",
+    "quiet_background_reads"
   ],
   "released_at": "2026-10-14",
-  "required_sql": 58,
-  "security_version": 58
+  "required_sql": 59,
+  "security_version": 59
 }
