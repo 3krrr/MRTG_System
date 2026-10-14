@@ -1,9 +1,9 @@
 {
-  "version": "3.2.1",
-  "minimum_version": "3.2.1",
+  "version": "3.2.2",
+  "minimum_version": "3.2.2",
   "protocol": 1,
   "file": "MiraeConnectorSetup.exe",
-  "size": 8179712,
-  "sha256": "7e2668bd9d691551c92fac53a2dad07dc163f15f1c25b584ad3f31be319bc3cd",
+  "size": 8192000,
+  "sha256": "d22ba7d46b971becf701145cfc39661b54dcfe665fbab28726c1ec6b5be47196",
   "released_at": "2026-10-14"
 }

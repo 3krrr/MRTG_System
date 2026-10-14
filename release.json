@@ -1,7 +1,7 @@
 {
-  "version": "261014_2",
-  "connector_version": "3.2.1",
-  "required_connector_version": "3.2.1",
+  "version": "261014_3",
+  "connector_version": "3.2.2",
+  "required_connector_version": "3.2.2",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -74,7 +74,14 @@
     "timenet_counsel_history",
     "timenet_batch_counsel_verified_save",
     "timenet_exria_json_headers",
-    "live_contact_snapshot_updates"
+    "live_contact_snapshot_updates",
+    "timenet_save_acknowledgement",
+    "counsel_six_second_spacing",
+    "student_first_counsel_grid",
+    "independent_counsel_scroll",
+    "mswitch_optional_display_name",
+    "stale_cache_explicit_retry",
+    "formatted_family_phones"
   ],
   "released_at": "2026-10-14",
   "required_sql": 54,
