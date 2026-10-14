@@ -1,7 +1,7 @@
 {
-  "version": "261014_7",
-  "connector_version": "3.3.0",
-  "required_connector_version": "3.3.0",
+  "version": "261014_8",
+  "connector_version": "3.3.1",
+  "required_connector_version": "3.3.1",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -94,9 +94,14 @@
     "idle_bridge_write_reduction",
     "compact_cache_metadata",
     "deduplicated_progress",
-    "foreground_connection_recovery"
+    "foreground_connection_recovery",
+    "bounded_session_recovery",
+    "upstream_100_second_timeout",
+    "counsel_loading_states",
+    "report_course_scope",
+    "counselor_syllabus_library"
   ],
   "released_at": "2026-10-14",
-  "required_sql": 57,
-  "security_version": 57
+  "required_sql": 58,
+  "security_version": 58
 }
