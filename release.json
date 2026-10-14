@@ -1,7 +1,7 @@
 {
-  "version": "261014_5",
-  "connector_version": "3.2.4",
-  "required_connector_version": "3.2.4",
+  "version": "261014_6",
+  "connector_version": "3.2.5",
+  "required_connector_version": "3.2.5",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -85,9 +85,12 @@
     "counsel_verified_recency",
     "counsel_withdrawn_readonly",
     "minimal_counsel_workspace",
-    "subject_scoped_counsel_overview"
+    "subject_scoped_counsel_overview",
+    "shared_account_counsel_overview",
+    "compact_counsel_class_drilldown",
+    "ordered_deployment_bundles"
   ],
   "released_at": "2026-10-14",
-  "required_sql": 55,
-  "security_version": 55
+  "required_sql": 56,
+  "security_version": 56
 }
