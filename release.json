@@ -1,7 +1,7 @@
 {
-  "version": "261015_1",
-  "connector_version": "3.3.1",
-  "required_connector_version": "3.3.1",
+  "version": "261015_2",
+  "connector_version": "3.3.2",
+  "required_connector_version": "3.3.2",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -106,9 +106,13 @@
     "quiet_background_reads",
     "archived_student_record_consolidation",
     "login_roster_integrity_check",
-    "usage_policy_dialog_fix"
+    "usage_policy_dialog_fix",
+    "eager_personal_counsel_directory",
+    "last_login_cache_handoff",
+    "bounded_login_expiry_resume",
+    "cancel_obsolete_cache_reads"
   ],
   "released_at": "2026-10-15",
-  "required_sql": 60,
-  "security_version": 60
+  "required_sql": 61,
+  "security_version": 61
 }
