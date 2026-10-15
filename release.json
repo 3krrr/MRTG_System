@@ -1,5 +1,5 @@
 {
-  "version": "261014_9",
+  "version": "261015_1",
   "connector_version": "3.3.1",
   "required_connector_version": "3.3.1",
   "features": [
@@ -103,9 +103,12 @@
     "official_identity_attendance_rows",
     "protected_duplicate_enrollment_cleanup",
     "login_phone_comparison_prefetch",
-    "quiet_background_reads"
+    "quiet_background_reads",
+    "archived_student_record_consolidation",
+    "login_roster_integrity_check",
+    "usage_policy_dialog_fix"
   ],
-  "released_at": "2026-10-14",
-  "required_sql": 59,
-  "security_version": 59
+  "released_at": "2026-10-15",
+  "required_sql": 60,
+  "security_version": 60
 }
