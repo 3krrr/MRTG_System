@@ -1,5 +1,5 @@
 {
-  "version": "261018_1",
+  "version": "261018_2",
   "connector_version": "3.3.2",
   "required_connector_version": "3.3.2",
   "features": [
@@ -117,9 +117,12 @@
     "task_deadline_reminders",
     "admission_test_workflow",
     "own_current_student_push",
-    "report_student_parent_push_scope"
+    "report_student_parent_push_scope",
+    "compact_push_type_filters",
+    "period_population_withdrawal_rates",
+    "permissioned_withdrawal_cancellation"
   ],
   "released_at": "2026-10-18",
-  "required_sql": 63,
-  "security_version": 63
+  "required_sql": 64,
+  "security_version": 64
 }
