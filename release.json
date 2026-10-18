@@ -1,5 +1,5 @@
 {
-  "version": "261015_3",
+  "version": "261018_1",
   "connector_version": "3.3.2",
   "required_connector_version": "3.3.2",
   "features": [
@@ -115,9 +115,11 @@
     "flexible_attendance_window",
     "paired_attendance_transfer",
     "task_deadline_reminders",
-    "admission_test_workflow"
+    "admission_test_workflow",
+    "own_current_student_push",
+    "report_student_parent_push_scope"
   ],
-  "released_at": "2026-10-15",
-  "required_sql": 62,
-  "security_version": 62
+  "released_at": "2026-10-18",
+  "required_sql": 63,
+  "security_version": 63
 }
