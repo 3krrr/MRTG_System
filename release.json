@@ -1,5 +1,5 @@
 {
-  "version": "261019_3",
+  "version": "261019_4",
   "connector_version": "3.3.2",
   "required_connector_version": "3.3.2",
   "features": [
@@ -130,9 +130,15 @@
     "lead_assistant_handoff",
     "private_shared_exam_papers",
     "cumulative_paper_comparison",
-    "optional_5_9_grade_estimation"
+    "optional_5_9_grade_estimation",
+    "lesson_draft_paper_link",
+    "lesson_draft_grade_estimate",
+    "atomic_lesson_exam_options",
+    "bounded_roster_index",
+    "embedded_one_speed_watch",
+    "student_unique_watch_progress"
   ],
   "released_at": "2026-10-19",
-  "required_sql": 67,
-  "security_version": 67
+  "required_sql": 68,
+  "security_version": 68
 }
