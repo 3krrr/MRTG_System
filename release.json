@@ -1,5 +1,5 @@
 {
-  "version": "261019_5",
+  "version": "261020_1",
   "connector_version": "3.3.2",
   "required_connector_version": "3.3.2",
   "features": [
@@ -137,12 +137,11 @@
     "bounded_roster_index",
     "embedded_one_speed_watch",
     "student_unique_watch_progress",
-    "authentication_before_workspace",
-    "serial_application_rpc",
-    "recoverable_workspace_preparation",
-    "rapid_navigation_loading_gate"
+    "complete_snapshot_before_login_completion",
+    "storage_failure_keeps_verified_memory_session",
+    "family_course_date_sort_guard"
   ],
-  "released_at": "2026-10-19",
+  "released_at": "2026-10-20",
   "required_sql": 68,
   "security_version": 68
 }
