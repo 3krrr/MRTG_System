@@ -1,5 +1,5 @@
 {
-  "version": "261019_2",
+  "version": "261019_3",
   "connector_version": "3.3.2",
   "required_connector_version": "3.3.2",
   "features": [
@@ -120,9 +120,19 @@
     "report_student_parent_push_scope",
     "compact_push_type_filters",
     "period_population_withdrawal_rates",
-    "permissioned_withdrawal_cancellation"
+    "permissioned_withdrawal_cancellation",
+    "scoped_account_directory",
+    "class_membership_only_removal",
+    "holiday_lesson_exclusion",
+    "draft_whole_present",
+    "separate_not_arrived_arrival_notice",
+    "publication_video_access_fix",
+    "lead_assistant_handoff",
+    "private_shared_exam_papers",
+    "cumulative_paper_comparison",
+    "optional_5_9_grade_estimation"
   ],
-  "released_at": "2026-10-18",
-  "required_sql": 64,
-  "security_version": 64
+  "released_at": "2026-10-19",
+  "required_sql": 67,
+  "security_version": 67
 }
