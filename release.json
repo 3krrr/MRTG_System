@@ -1,5 +1,5 @@
 {
-  "version": "261019_4",
+  "version": "261019_5",
   "connector_version": "3.3.2",
   "required_connector_version": "3.3.2",
   "features": [
@@ -136,7 +136,11 @@
     "atomic_lesson_exam_options",
     "bounded_roster_index",
     "embedded_one_speed_watch",
-    "student_unique_watch_progress"
+    "student_unique_watch_progress",
+    "authentication_before_workspace",
+    "serial_application_rpc",
+    "recoverable_workspace_preparation",
+    "rapid_navigation_loading_gate"
   ],
   "released_at": "2026-10-19",
   "required_sql": 68,
