@@ -1,5 +1,5 @@
 {
-  "version": "261020_1",
+  "version": "261020_2",
   "connector_version": "3.3.2",
   "required_connector_version": "3.3.2",
   "features": [
@@ -136,12 +136,16 @@
     "atomic_lesson_exam_options",
     "bounded_roster_index",
     "embedded_one_speed_watch",
-    "student_unique_watch_progress",
     "complete_snapshot_before_login_completion",
     "storage_failure_keeps_verified_memory_session",
-    "family_course_date_sort_guard"
+    "family_course_date_sort_guard",
+    "video_overlay_fullscreen_captions",
+    "student_unique_watch_progress",
+    "video_10second_compact_save",
+    "teacher_only_video_watch_statistics"
   ],
   "released_at": "2026-10-20",
   "required_sql": 68,
-  "security_version": 68
+  "security_version": 68,
+  "video_save_interval_seconds": 10
 }
