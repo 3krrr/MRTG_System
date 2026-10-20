@@ -1,5 +1,5 @@
 {
-  "version": "261020_3",
+  "version": "261021_1",
   "connector_version": "3.3.2",
   "required_connector_version": "3.3.2",
   "features": [
@@ -146,11 +146,16 @@
     "paper_usage_summary_and_details",
     "unused_paper_safe_delete",
     "video_fullscreen_auto_hide_controls",
-    "video_supported_landscape_lock"
+    "video_supported_landscape_lock",
+    "family_latest_class_homework",
+    "family_three_dashboard_metrics",
+    "family_hide_school_makeup_analytics",
+    "family_exam_history_charts"
   ],
-  "released_at": "2026-10-20",
+  "released_at": "2026-10-21",
   "required_sql": 68,
   "security_version": 68,
   "video_save_interval_seconds": 10,
-  "paper_usage_sql": 70
+  "paper_usage_sql": 70,
+  "family_chart_sql": 71
 }
