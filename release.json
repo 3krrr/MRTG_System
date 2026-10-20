@@ -1,5 +1,5 @@
 {
-  "version": "261021_1",
+  "version": "261021_2",
   "connector_version": "3.3.2",
   "required_connector_version": "3.3.2",
   "features": [
@@ -150,7 +150,13 @@
     "family_latest_class_homework",
     "family_three_dashboard_metrics",
     "family_hide_school_makeup_analytics",
-    "family_exam_history_charts"
+    "family_exam_history_charts",
+    "drive_material_composer_download",
+    "family_list_numbers_removed",
+    "student_consultation_menu_hidden",
+    "compact_unnumbered_makeup_lists",
+    "ordinary_list_refresh_on_entry",
+    "unchanged_live_response_keeps_dom"
   ],
   "released_at": "2026-10-21",
   "required_sql": 68,
