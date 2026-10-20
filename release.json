@@ -1,5 +1,5 @@
 {
-  "version": "261020_2",
+  "version": "261020_3",
   "connector_version": "3.3.2",
   "required_connector_version": "3.3.2",
   "features": [
@@ -142,10 +142,15 @@
     "video_overlay_fullscreen_captions",
     "student_unique_watch_progress",
     "video_10second_compact_save",
-    "teacher_only_video_watch_statistics"
+    "teacher_only_video_watch_statistics",
+    "paper_usage_summary_and_details",
+    "unused_paper_safe_delete",
+    "video_fullscreen_auto_hide_controls",
+    "video_supported_landscape_lock"
   ],
   "released_at": "2026-10-20",
   "required_sql": 68,
   "security_version": 68,
-  "video_save_interval_seconds": 10
+  "video_save_interval_seconds": 10,
+  "paper_usage_sql": 70
 }
