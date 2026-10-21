@@ -1,5 +1,5 @@
 {
-  "version": "261021_3",
+  "version": "261021_4",
   "connector_version": "3.3.3",
   "required_connector_version": "3.3.2",
   "features": [
@@ -165,7 +165,8 @@
     "semantic_activity_groups",
     "weekly_test_presence",
     "mobile_chart_fit_eight",
-    "contextual_question_help"
+    "contextual_question_help",
+    "always_available_configured_connector_download"
   ],
   "released_at": "2026-10-21",
   "required_sql": 68,
