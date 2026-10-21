@@ -1,6 +1,6 @@
 {
-  "version": "261021_2",
-  "connector_version": "3.3.2",
+  "version": "261021_3",
+  "connector_version": "3.3.3",
   "required_connector_version": "3.3.2",
   "features": [
     "clean_inbox_list_preserved_letter",
@@ -156,12 +156,25 @@
     "student_consultation_menu_hidden",
     "compact_unnumbered_makeup_lists",
     "ordinary_list_refresh_on_entry",
-    "unchanged_live_response_keeps_dom"
+    "unchanged_live_response_keeps_dom",
+    "weekday_classrooms",
+    "owned_twin_classes",
+    "twin_explicit_date_pairing",
+    "twin_combined_statistics",
+    "scoped_install_notice_sms",
+    "semantic_activity_groups",
+    "weekly_test_presence",
+    "mobile_chart_fit_eight",
+    "contextual_question_help"
   ],
   "released_at": "2026-10-21",
   "required_sql": 68,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
-  "family_chart_sql": 71
+  "family_chart_sql": 71,
+  "classroom_sql": 72,
+  "install_notice_sql": 72,
+  "activity_sql": 72,
+  "install_notice_connector_version": "3.3.3"
 }
