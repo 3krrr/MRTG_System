@@ -1,5 +1,5 @@
 {
-  "version": "261021_5",
+  "version": "261021_6",
   "connector_version": "3.3.3",
   "required_connector_version": "3.3.2",
   "features": [
@@ -174,7 +174,12 @@
     "family_room_badge",
     "online_homework_default_off",
     "report_attendance_book_source",
-    "lesson_attendance_book_sync"
+    "lesson_attendance_book_sync",
+    "course_data_tabs",
+    "personal_material_catalog",
+    "one_click_material_import",
+    "paired_lesson_delete_and_undo",
+    "attendance_class_teacher_labels"
   ],
   "released_at": "2026-10-21",
   "required_sql": 68,
@@ -186,5 +191,6 @@
   "install_notice_sql": 72,
   "activity_sql": 72,
   "install_notice_connector_version": "3.3.3",
-  "lesson_integrity_sql": 73
+  "lesson_integrity_sql": 73,
+  "course_data_sql": 74
 }
