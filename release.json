@@ -1,5 +1,5 @@
 {
-  "version": "261021_4",
+  "version": "261021_5",
   "connector_version": "3.3.3",
   "required_connector_version": "3.3.2",
   "features": [
@@ -166,7 +166,15 @@
     "weekly_test_presence",
     "mobile_chart_fit_eight",
     "contextual_question_help",
-    "always_available_configured_connector_download"
+    "always_available_configured_connector_download",
+    "oversight_includes_self_and_all_ranks",
+    "twin_lesson_content_and_publication",
+    "lesson_unique_session",
+    "twin_navigation_same_tab",
+    "family_room_badge",
+    "online_homework_default_off",
+    "report_attendance_book_source",
+    "lesson_attendance_book_sync"
   ],
   "released_at": "2026-10-21",
   "required_sql": 68,
@@ -177,5 +185,6 @@
   "classroom_sql": 72,
   "install_notice_sql": 72,
   "activity_sql": 72,
-  "install_notice_connector_version": "3.3.3"
+  "install_notice_connector_version": "3.3.3",
+  "lesson_integrity_sql": 73
 }
