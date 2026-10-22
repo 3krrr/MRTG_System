@@ -1,6 +1,6 @@
 {
-  "version": "261022_3",
-  "connector_version": "3.3.6",
+  "version": "261022_4",
+  "connector_version": "3.3.7",
   "required_connector_version": "3.3.2",
   "features": [
     "clean_inbox_list_preserved_letter",
@@ -194,7 +194,9 @@
     "timenet_har5_only_roster",
     "timenet_parallel_centers_shared_session",
     "timenet_verified_all_pages",
-    "timenet_sparse_class_metadata_preserved"
+    "timenet_sparse_class_metadata_preserved",
+    "timenet_same_endpoint_xml_json",
+    "timenet_failure_stage_visible"
   ],
   "released_at": "2026-10-22",
   "required_sql": 68,
@@ -211,5 +213,5 @@
   "material_bulk_sql": 75,
   "material_bulk_connector_version": "3.3.4",
   "makeup_stats_sql": 76,
-  "timenet_connector_version": "3.3.6"
+  "timenet_connector_version": "3.3.7"
 }
