@@ -1,6 +1,6 @@
 {
-  "version": "261022_1",
-  "connector_version": "3.3.4",
+  "version": "261022_3",
+  "connector_version": "3.3.6",
   "required_connector_version": "3.3.2",
   "features": [
     "clean_inbox_list_preserved_letter",
@@ -187,9 +187,16 @@
     "intentional_roster_indices",
     "mobile_attendance_editing",
     "compact_push_status",
-    "makeup_end_time_classification"
+    "makeup_end_time_classification",
+    "timenet_single_session_roster",
+    "timenet_center_expiry_recovery",
+    "actionable_relay_errors",
+    "timenet_har5_only_roster",
+    "timenet_parallel_centers_shared_session",
+    "timenet_verified_all_pages",
+    "timenet_sparse_class_metadata_preserved"
   ],
-  "released_at": "2026-10-21",
+  "released_at": "2026-10-22",
   "required_sql": 68,
   "security_version": 68,
   "video_save_interval_seconds": 10,
@@ -203,5 +210,6 @@
   "course_data_sql": 74,
   "material_bulk_sql": 75,
   "material_bulk_connector_version": "3.3.4",
-  "makeup_stats_sql": 76
+  "makeup_stats_sql": 76,
+  "timenet_connector_version": "3.3.6"
 }
