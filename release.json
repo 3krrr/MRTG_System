@@ -1,5 +1,5 @@
 {
-  "version": "261021_7",
+  "version": "261022_1",
   "connector_version": "3.3.4",
   "required_connector_version": "3.3.2",
   "features": [
@@ -183,7 +183,11 @@
     "board_editor_draft_isolation",
     "scoped_dialog_draft_restore",
     "public_drive_folder_catalog",
-    "canonical_drive_duplicate_guard"
+    "canonical_drive_duplicate_guard",
+    "intentional_roster_indices",
+    "mobile_attendance_editing",
+    "compact_push_status",
+    "makeup_end_time_classification"
   ],
   "released_at": "2026-10-21",
   "required_sql": 68,
@@ -198,5 +202,6 @@
   "lesson_integrity_sql": 73,
   "course_data_sql": 74,
   "material_bulk_sql": 75,
-  "material_bulk_connector_version": "3.3.4"
+  "material_bulk_connector_version": "3.3.4",
+  "makeup_stats_sql": 76
 }
