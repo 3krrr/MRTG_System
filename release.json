@@ -1,5 +1,5 @@
 {
-  "version": "261022_6",
+  "version": "261022_7",
   "connector_version": "3.3.7",
   "required_connector_version": "3.3.2",
   "features": [
@@ -207,10 +207,23 @@
     "library_author_creation_date",
     "library_scope_picker",
     "material_original_filename_sort",
-    "bulk_blank_title_filename"
+    "bulk_blank_title_filename",
+    "attendance_save_then_parent_notify",
+    "compact_attendance_reason_bookmark",
+    "attendance_status_backgrounds",
+    "mobile_visible_attendance_status",
+    "mobile_single_line_student_list",
+    "mobile_single_line_push_status",
+    "mobile_login_history_filters",
+    "usage_priority_teachers_and_classes",
+    "staff_family_student_report",
+    "timenet_counsel_mobile_guard",
+    "family_whole_row_lesson_history",
+    "family_inline_exam_detail",
+    "family_help_buttons_removed"
   ],
   "released_at": "2026-10-22",
-  "required_sql": 78,
+  "required_sql": 79,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -224,5 +237,7 @@
   "material_bulk_sql": 78,
   "material_bulk_connector_version": "3.3.4",
   "makeup_stats_sql": 76,
-  "timenet_connector_version": "3.3.7"
+  "timenet_connector_version": "3.3.7",
+  "student_report_sql": 79,
+  "usage_class_detail_sql": 79
 }
