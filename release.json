@@ -1,5 +1,5 @@
 {
-  "version": "261022_5",
+  "version": "261022_6",
   "connector_version": "3.3.7",
   "required_connector_version": "3.3.2",
   "features": [
@@ -199,10 +199,18 @@
     "timenet_failure_stage_visible",
     "timenet_dedicated_atomic_cache77",
     "timenet_server_job_result_save",
-    "timenet_idempotent_cache_save"
+    "timenet_idempotent_cache_save",
+    "mobile_single_list_scroll",
+    "mobile_table_details",
+    "mobile_attendance_date_selector",
+    "private_shared_data_libraries",
+    "library_author_creation_date",
+    "library_scope_picker",
+    "material_original_filename_sort",
+    "bulk_blank_title_filename"
   ],
   "released_at": "2026-10-22",
-  "required_sql": 77,
+  "required_sql": 78,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -212,8 +220,8 @@
   "activity_sql": 72,
   "install_notice_connector_version": "3.3.3",
   "lesson_integrity_sql": 73,
-  "course_data_sql": 74,
-  "material_bulk_sql": 75,
+  "course_data_sql": 78,
+  "material_bulk_sql": 78,
   "material_bulk_connector_version": "3.3.4",
   "makeup_stats_sql": 76,
   "timenet_connector_version": "3.3.7"
