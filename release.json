@@ -1,5 +1,5 @@
 {
-  "version": "261022_4",
+  "version": "261022_5",
   "connector_version": "3.3.7",
   "required_connector_version": "3.3.2",
   "features": [
@@ -196,10 +196,13 @@
     "timenet_verified_all_pages",
     "timenet_sparse_class_metadata_preserved",
     "timenet_same_endpoint_xml_json",
-    "timenet_failure_stage_visible"
+    "timenet_failure_stage_visible",
+    "timenet_dedicated_atomic_cache77",
+    "timenet_server_job_result_save",
+    "timenet_idempotent_cache_save"
   ],
   "released_at": "2026-10-22",
-  "required_sql": 68,
+  "required_sql": 77,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
