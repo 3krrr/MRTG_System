@@ -1,7 +1,7 @@
 {
-  "version": "261023_5",
-  "connector_version": "3.3.10",
-  "required_connector_version": "3.3.10",
+  "version": "261024_1",
+  "connector_version": "3.3.11",
+  "required_connector_version": "3.3.11",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -248,18 +248,23 @@
     "student_report_search_results",
     "mswitch_parent_only_install_sms",
     "mswitch_two_centers_parallel_reads",
-    "install_sms_local_template_preview"
+    "install_sms_local_template_preview",
+    "cross_center_identity_deduplication",
+    "same_phone_content_sms_once",
+    "parent_directory_force_refresh",
+    "desktop_staff_attention",
+    "assigned_cross_subject_class_access"
   ],
-  "released_at": "2026-10-23",
-  "required_sql": 83,
+  "released_at": "2026-10-24",
+  "required_sql": 84,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
   "family_chart_sql": 71,
   "classroom_sql": 72,
-  "install_notice_sql": 81,
+  "install_notice_sql": 84,
   "activity_sql": 72,
-  "install_notice_connector_version": "3.3.3",
+  "install_notice_connector_version": "3.3.11",
   "lesson_integrity_sql": 73,
   "course_data_sql": 81,
   "material_bulk_sql": 81,
@@ -269,5 +274,6 @@
   "student_report_sql": 79,
   "usage_class_detail_sql": 79,
   "course_report_sql": 80,
-  "shared_subject_sql": 81
+  "shared_subject_sql": 81,
+  "staff_attention_sql": 84
 }
