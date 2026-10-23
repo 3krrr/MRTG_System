@@ -1,6 +1,6 @@
 {
-  "version": "261023_1",
-  "connector_version": "3.3.7",
+  "version": "261023_2",
+  "connector_version": "3.3.8",
   "required_connector_version": "3.3.2",
   "features": [
     "clean_inbox_list_preserved_letter",
@@ -225,10 +225,14 @@
     "split_personal_shared_search",
     "batch_material_selection",
     "anchored_dialog_layout",
-    "lesson_material_order_controls"
+    "lesson_material_order_controls",
+    "mswitch_login_center_membership",
+    "timenet_today_next_month_union",
+    "install_step_counter_once",
+    "course_report_upcoming_recent_ended"
   ],
   "released_at": "2026-10-23",
-  "required_sql": 79,
+  "required_sql": 80,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -242,7 +246,8 @@
   "material_bulk_sql": 78,
   "material_bulk_connector_version": "3.3.4",
   "makeup_stats_sql": 76,
-  "timenet_connector_version": "3.3.7",
+  "timenet_connector_version": "3.3.8",
   "student_report_sql": 79,
-  "usage_class_detail_sql": 79
+  "usage_class_detail_sql": 79,
+  "course_report_sql": 80
 }
