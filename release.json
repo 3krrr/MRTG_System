@@ -1,7 +1,7 @@
 {
-  "version": "261023_4",
-  "connector_version": "3.3.9",
-  "required_connector_version": "3.3.9",
+  "version": "261023_5",
+  "connector_version": "3.3.10",
+  "required_connector_version": "3.3.10",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -244,10 +244,14 @@
     "mswitch_current_owner_binding_recovery",
     "mswitch_contact_read_without_sms_settings",
     "mswitch_account_center_snapshot_consistency",
-    "mobile_pc_cache_diagnostics"
+    "mobile_pc_cache_diagnostics",
+    "student_report_search_results",
+    "mswitch_parent_only_install_sms",
+    "mswitch_two_centers_parallel_reads",
+    "install_sms_local_template_preview"
   ],
   "released_at": "2026-10-23",
-  "required_sql": 82,
+  "required_sql": 83,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
