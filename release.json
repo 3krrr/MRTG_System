@@ -1,5 +1,5 @@
 {
-  "version": "261024_5",
+  "version": "261024_6",
   "connector_version": "3.3.12",
   "required_connector_version": "3.3.12",
   "features": [
@@ -266,10 +266,15 @@
     "default_parent_and_password_checked",
     "future_course_health_reference_date",
     "legacy_enrollment_course_directory",
-    "course_health_scope_alignment"
+    "course_health_scope_alignment",
+    "private_shared_sms_sender",
+    "send_only_shared_account_route",
+    "live_override_draft_acceptance",
+    "attendance_saved_response_validation",
+    "attendance_readback_failure_retention"
   ],
   "released_at": "2026-10-24",
-  "required_sql": 88,
+  "required_sql": 89,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -298,5 +303,7 @@
     "default_password": true
   },
   "course_health_sql": 88,
-  "family_directory_sql": 88
+  "family_directory_sql": 88,
+  "shared_sms_sender_sql": 89,
+  "live_attendance_repair_sql": 89
 }
