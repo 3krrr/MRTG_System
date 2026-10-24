@@ -1,5 +1,5 @@
 {
-  "version": "261024_4",
+  "version": "261024_5",
   "connector_version": "3.3.12",
   "required_connector_version": "3.3.12",
   "features": [
@@ -263,10 +263,13 @@
     "global_student_id_availability_preview",
     "homonym_login_suffixes",
     "existing_student_credential_preservation",
-    "default_parent_and_password_checked"
+    "default_parent_and_password_checked",
+    "future_course_health_reference_date",
+    "legacy_enrollment_course_directory",
+    "course_health_scope_alignment"
   ],
   "released_at": "2026-10-24",
-  "required_sql": 87,
+  "required_sql": 88,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -293,5 +296,7 @@
   "student_enrollment_defaults": {
     "auto_parent": true,
     "default_password": true
-  }
+  },
+  "course_health_sql": 88,
+  "family_directory_sql": 88
 }
