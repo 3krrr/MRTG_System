@@ -22,13 +22,13 @@
       "purpose": "any"
     },
     {
-      "src": "icons/mirae-android-192-261024_1.png",
+      "src": "icons/mirae-android-192-261024_3.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "icons/mirae-android-512-261024_1.png",
+      "src": "icons/mirae-android-512-261024_3.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
