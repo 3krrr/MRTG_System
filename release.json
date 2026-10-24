@@ -1,5 +1,5 @@
 {
-  "version": "261024_6",
+  "version": "261024_7",
   "connector_version": "3.3.12",
   "required_connector_version": "3.3.12",
   "features": [
@@ -271,10 +271,12 @@
     "send_only_shared_account_route",
     "live_override_draft_acceptance",
     "attendance_saved_response_validation",
-    "attendance_readback_failure_retention"
+    "attendance_readback_failure_retention",
+    "exam_maximum_final_state_guard",
+    "null_safe_common_timenet_defaults"
   ],
   "released_at": "2026-10-24",
-  "required_sql": 89,
+  "required_sql": 90,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -305,5 +307,6 @@
   "course_health_sql": 88,
   "family_directory_sql": 88,
   "shared_sms_sender_sql": 89,
-  "live_attendance_repair_sql": 89
+  "live_attendance_repair_sql": 89,
+  "audit_sql": 90
 }
