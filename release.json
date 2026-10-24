@@ -1,5 +1,5 @@
 {
-  "version": "261024_3",
+  "version": "261024_4",
   "connector_version": "3.3.12",
   "required_connector_version": "3.3.12",
   "features": [
@@ -259,10 +259,14 @@
     "on_demand_counsel_directory",
     "coalesced_identity_scoped_reads",
     "sms_registry_readonly_contact_comparison",
-    "course_report_sql85_preserved"
+    "course_report_sql85_preserved",
+    "global_student_id_availability_preview",
+    "homonym_login_suffixes",
+    "existing_student_credential_preservation",
+    "default_parent_and_password_checked"
   ],
   "released_at": "2026-10-24",
-  "required_sql": 86,
+  "required_sql": 87,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -284,5 +288,10 @@
   "staff_attention_sql": 84,
   "timenet_counsel_sql": 86,
   "timenet_counsel_connector_version": "3.3.12",
-  "course_report_repair_sql": 85
+  "course_report_repair_sql": 85,
+  "student_enrollment_sql": 87,
+  "student_enrollment_defaults": {
+    "auto_parent": true,
+    "default_password": true
+  }
 }
