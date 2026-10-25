@@ -1,5 +1,5 @@
 {
-  "version": "261024_7",
+  "version": "261025_1",
   "connector_version": "3.3.12",
   "required_connector_version": "3.3.12",
   "features": [
@@ -273,10 +273,12 @@
     "attendance_saved_response_validation",
     "attendance_readback_failure_retention",
     "exam_maximum_final_state_guard",
-    "null_safe_common_timenet_defaults"
+    "null_safe_common_timenet_defaults",
+    "attendance_push_first_recheck",
+    "teacher_scoped_communication_results"
   ],
   "released_at": "2026-10-24",
-  "required_sql": 90,
+  "required_sql": 91,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -308,5 +310,5 @@
   "family_directory_sql": 88,
   "shared_sms_sender_sql": 89,
   "live_attendance_repair_sql": 89,
-  "audit_sql": 90
+  "audit_sql": 91
 }
