@@ -1,5 +1,5 @@
 {
-  "version": "261025_3",
+  "version": "261026_1",
   "connector_version": "3.3.12",
   "required_connector_version": "3.3.12",
   "features": [
@@ -280,10 +280,15 @@
     "report_recipient_selection_columns",
     "report_attendance_badges",
     "lesson_attendance_writer_source",
-    "precise_attendance_validation_context"
+    "precise_attendance_validation_context",
+    "compact_mobile_attendance_identity",
+    "transfer_students_name_ascending",
+    "default_teacher_own_login_history",
+    "scoped_parent_view_history",
+    "single_request_activity_summary"
   ],
-  "released_at": "2026-10-24",
-  "required_sql": 93,
+  "released_at": "2026-10-26",
+  "required_sql": 94,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -315,5 +320,5 @@
   "family_directory_sql": 88,
   "shared_sms_sender_sql": 89,
   "live_attendance_repair_sql": 89,
-  "audit_sql": 93
+  "audit_sql": 94
 }
