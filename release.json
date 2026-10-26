@@ -1,5 +1,5 @@
 {
-  "version": "261026_3",
+  "version": "261026_4",
   "connector_version": "3.3.12",
   "required_connector_version": "3.3.12",
   "features": [
@@ -288,10 +288,15 @@
     "single_request_activity_summary",
     "save_ticket_draft_revision_fix",
     "unchanged_lesson_preserves_report_revision",
-    "report_unknown_response_receipt_check"
+    "report_unknown_response_receipt_check",
+    "internal_library_folders",
+    "drag_and_mobile_material_moves",
+    "library_folder_search_paths",
+    "drive_images_hangul_original_files",
+    "parent_only_install_notice_set_query"
   ],
   "released_at": "2026-10-26",
-  "required_sql": 94,
+  "required_sql": 95,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -323,5 +328,8 @@
   "family_directory_sql": 88,
   "shared_sms_sender_sql": 89,
   "live_attendance_repair_sql": 89,
-  "audit_sql": 94
+  "audit_sql": 94,
+  "notes": "자료 폴더 정리 · 사진/한글 자료 · 학부모 앱설치 안내 목록 복구",
+  "library_folders_sql": 95,
+  "install_parent_list_sql": 95
 }
