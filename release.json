@@ -1,5 +1,5 @@
 {
-  "version": "261026_5",
+  "version": "261026_6",
   "connector_version": "3.3.12",
   "required_connector_version": "3.3.12",
   "features": [
@@ -296,10 +296,15 @@
     "parent_only_install_notice_set_query",
     "authoritative_attendance_foreground_read",
     "per_video_account_audience",
-    "explicit_repeatable_makeup_notifications"
+    "explicit_repeatable_makeup_notifications",
+    "managed_selection_draft_isolation",
+    "foreground_install_roster_refresh",
+    "atomic_membership_multi_remove",
+    "mobile_live_select_all",
+    "scoped_communication_events"
   ],
   "released_at": "2026-10-26",
-  "required_sql": 96,
+  "required_sql": 97,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -332,10 +337,12 @@
   "shared_sms_sender_sql": 89,
   "live_attendance_repair_sql": 89,
   "audit_sql": 94,
-  "notes": "출결 공통 기록 최신화 · 영상별 공개 대상 · 보충 수동 앱푸시",
+  "notes": "체크박스 선택 복원 충돌 수정 · 엠스위치 갱신 진행창 · 다중 원생 삭제 · 모바일 전체 출석 · 이벤트별 통신내역",
   "library_folders_sql": 95,
   "install_parent_list_sql": 95,
   "attendance_sync_sql": 96,
   "video_audience_sql": 96,
-  "makeup_manual_notice_sql": 96
+  "makeup_manual_notice_sql": 96,
+  "communications_events_sql": 97,
+  "membership_batch_sql": 97
 }
