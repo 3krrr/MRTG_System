@@ -1,5 +1,5 @@
 {
-  "version": "261026_1",
+  "version": "261026_3",
   "connector_version": "3.3.12",
   "required_connector_version": "3.3.12",
   "features": [
@@ -285,7 +285,10 @@
     "transfer_students_name_ascending",
     "default_teacher_own_login_history",
     "scoped_parent_view_history",
-    "single_request_activity_summary"
+    "single_request_activity_summary",
+    "save_ticket_draft_revision_fix",
+    "unchanged_lesson_preserves_report_revision",
+    "report_unknown_response_receipt_check"
   ],
   "released_at": "2026-10-26",
   "required_sql": 94,
