@@ -1,5 +1,5 @@
 {
-  "version": "261026_4",
+  "version": "261026_5",
   "connector_version": "3.3.12",
   "required_connector_version": "3.3.12",
   "features": [
@@ -293,10 +293,13 @@
     "drag_and_mobile_material_moves",
     "library_folder_search_paths",
     "drive_images_hangul_original_files",
-    "parent_only_install_notice_set_query"
+    "parent_only_install_notice_set_query",
+    "authoritative_attendance_foreground_read",
+    "per_video_account_audience",
+    "explicit_repeatable_makeup_notifications"
   ],
   "released_at": "2026-10-26",
-  "required_sql": 95,
+  "required_sql": 96,
   "security_version": 68,
   "video_save_interval_seconds": 10,
   "paper_usage_sql": 70,
@@ -329,7 +332,10 @@
   "shared_sms_sender_sql": 89,
   "live_attendance_repair_sql": 89,
   "audit_sql": 94,
-  "notes": "자료 폴더 정리 · 사진/한글 자료 · 학부모 앱설치 안내 목록 복구",
+  "notes": "출결 공통 기록 최신화 · 영상별 공개 대상 · 보충 수동 앱푸시",
   "library_folders_sql": 95,
-  "install_parent_list_sql": 95
+  "install_parent_list_sql": 95,
+  "attendance_sync_sql": 96,
+  "video_audience_sql": 96,
+  "makeup_manual_notice_sql": 96
 }
