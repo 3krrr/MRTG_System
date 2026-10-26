@@ -1,7 +1,7 @@
 {
-  "version": "261026_6",
-  "connector_version": "3.3.12",
-  "required_connector_version": "3.3.12",
+  "version": "261027_1",
+  "connector_version": "3.3.13",
+  "required_connector_version": "3.3.13",
   "features": [
     "clean_inbox_list_preserved_letter",
     "family_assignment_integrity",
@@ -312,7 +312,7 @@
   "classroom_sql": 72,
   "install_notice_sql": 84,
   "activity_sql": 72,
-  "install_notice_connector_version": "3.3.12",
+  "install_notice_connector_version": "3.3.13",
   "lesson_integrity_sql": 73,
   "course_data_sql": 81,
   "material_bulk_sql": 81,
@@ -344,5 +344,6 @@
   "video_audience_sql": 96,
   "makeup_manual_notice_sql": 96,
   "communications_events_sql": 97,
-  "membership_batch_sql": 97
+  "membership_batch_sql": 97,
+  "password_change_guidance103": true
 }
