@@ -1,6 +1,1 @@
-window.MIRAE_CONFIG = {
-  "VERSION": "2.0.0",
-  "BRAND": "미래탐구",
-  "SUPABASE_URL": "https://fxyvzzfpulejybppthui.supabase.co",
-  "SUPABASE_KEY": "sb_publishable_bJDkRVHXJ-10xi7Z03w-QA_jz3LZpXT"
-};
+window.MIRAE_CONFIG={SUPABASE_URL:"https://119.196.240.62:8443",SUPABASE_KEY:"pc-local-server",PC_SERVER:true,TEST_MODE:false,DELIVERY_BLOCKED:false,PUSH_REGISTRATION_DISABLED:false};
